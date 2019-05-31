@@ -65,3 +65,10 @@ export const App: React.StatelessComponent = (props) => (
   </div>
 );
 ```
+
+- Time to test this async piece :), let's create a file called _name-collection.spec.tsx_
+
+_./src/name-collection.spec.tsx_
+
+```
+```
