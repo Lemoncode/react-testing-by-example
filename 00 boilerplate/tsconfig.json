@@ -10,7 +10,8 @@
     "noLib": false,
     "allowJs": true,
     "suppressImplicitAnyIndexErrors": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true
   },
   "compileOnSave": true,
   "exclude": ["node_modules"]
