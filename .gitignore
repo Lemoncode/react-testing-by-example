@@ -8,3 +8,5 @@ typings/
 *.log
 **/.vscode/
 package-lock.json
+coverage/
+.awcache/
