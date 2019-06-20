@@ -1,8 +1,8 @@
-# 03 TDD
+# 04 TDD
 
 In this example we are going to apply Test Driven Development while we are implementing the app.
 
-We will start from `02-calculator`.
+We will start from `03-debug`.
 
 Summary steps:
 
