@@ -6,7 +6,6 @@ typings/
 .idea/
 */src/**/*.js.map
 *.log
-**/.vscode/
 package-lock.json
 coverage/
 .awcache/

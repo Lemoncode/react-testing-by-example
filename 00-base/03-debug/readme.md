@@ -60,7 +60,7 @@ As we know, VS Code provides by default a [node debugger](https://code.visualstu
 
 - Now we could run specs in debugging mode.
 
-![02-debugging](./readme-resources/02-debugging.gif)
+![02-debug](./readme-resources/02-debug.gif)
 
 - We can add the `watch` mode configuration too. It's like previous configuration but adding the `--watchAll` flag:
 
@@ -94,6 +94,41 @@ As we know, VS Code provides by default a [node debugger](https://code.visualstu
 }
 
 ```
+
+- Add config to run only selected file:
+
+### ./.vscode/launch.json
+
+```diff
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      ...
+-   }
++   },
++   {
++     "type": "node",
++     "request": "launch",
++     "name": "Jest selected file",
++     "program": "${workspaceRoot}/node_modules/jest/bin/jest.js",
++     "args": [
++       "${fileBasenameNoExtension}",
++       "-c",
++       "./config/test/jest.json",
++       "--verbose",
++       "-i",
++       "--no-cache",
++       "--watchAll"
++     ],
++     "console": "integratedTerminal",
++     "internalConsoleOptions": "neverOpen"
++   }
+  ]
+}
+
+```
+
 
 - If you want more info about configure it, check this [post](https://www.basefactor.com/using-visual-studio-code-to-debug-jest-based-unit-tests)
 
