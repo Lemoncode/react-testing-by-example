@@ -1,15 +1,13 @@
-# 01 Config
+# 02 Calculator
 
-In this example we are going to add a basic setup needed to support unit testing with Jest.
+In this example we are going to add a basic example to test plain vanilla javascript.
 
-We will start from `00-boilerplate`.
+We will start from `01-config`.
 
 Summary steps:
 
-- Install `jest`.
-- Add configuration.
-- Add dummy spec.
-- External jest config file.
+- Create `calculator` business.
+- Add unit tests.
 
 # Steps to build it
 
@@ -19,200 +17,303 @@ Summary steps:
 npm install
 ```
 
-# Libraries
+- Create calculator:
 
-- We are going to install the main library which we base all our unit tests, [Jest](https://facebook.github.io/jest/en/).
-
-- [jest](https://github.com/facebook/jest): JavaScript Testing library with runner, assertion, mocks, etc.
-- [@types/jest](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/df38f202a0185eadfb6012e47dd91f8975eb6151/types/jest): Typings for jest.
-- [ts-jest](https://github.com/kulshekhar/ts-jest): A preprocessor with sourcemap support to help use TypeScript with Jest.
-
-```bash
-npm install jest @types/jest ts-jest -D
-```
-
-# Config
-
-
-- Jest test commands:
-  - `npm test`: to single run
-  - `npm run test:watch`: to run all specs after changes.
-
-> NOTE:
-
-> [Jest CLI options](https://facebook.github.io/jest/docs/en/cli.html#options)
-
-> --watchAll To rerun all tests.
-
-> --watch To rerun tests related to changed files.
-
-> --verbose Display individual test results with the test suite hierarchy.
-
-> -i or --runInBand Run all tests serially in the current process, rather than creating a worker pool of child processes that run tests. This can be useful for debugging
-
-### ./package.json
-
-```diff
-{
-  ...
-  "scripts": {
-    ...
--   "build": "npm run clean && webpack --config ./config/webpack/prod.js"
-+   "build": "npm run clean && webpack --config ./config/webpack/prod.js",
-+   "test": "jest --verbose",
-+   "test:watch": "jest --verbose --watchAll -i"
-  },
-  ...
-}
-```
-
-- [ts-jest basic configuration](https://kulshekhar.github.io/ts-jest/user/config/#basic-usage):
-
-### ./package.json
-
-```diff
-{
-    ...
-- }
-+ },
-+ "jest": {
-+   "preset": "ts-jest"
-+ }
-```
-
-- Finally we are going to automatically restore mock state between every test:
-
-### ./package.json
-```diff
-{
-  ...
-  "jest": {
--   "preset": "ts-jest"
-+   "preset": "ts-jest",
-+   "restoreMocks": true
-  }
-}
-```
-
-> [Jest configuration options](https://facebook.github.io/jest/docs/en/configuration.html#options)
-
-# Dummy spec
-
-- Let's launch tests in watch mode:
-
-```bash
-npm run test:watch
-```
-
-- Adding success spec:
-
-### ./src/dummy.spec.ts
+### ./src/calculator.ts
 
 ```javascript
-describe('dummy specs', () => {
-  it('should pass spec', () => {
-    // Arrange
-
-    // Act
-
-    // Assert
-    expect(true).toBeTruthy();
-  });
-});
-
+export const add = (a, b) => a + b;
 ```
 
-- Adding failed spec:
+- Rename `dummy.spec.ts` to `calculator.spec.ts`:
 
-### ./src/dummy.spec.ts
+### ./src/calculator.spec.ts
 
 ```diff
-describe('dummy specs', () => {
-  it('should pass spec', () => {
-    // Arrange
++ import * as calculator from "./calculator";
 
-    // Act
+- describe('dummy specs', () => {
++ describe("Calculator tests", () => {
++   describe("add", () => {
+-     it('should pass spec', () => {
++     it("should return 4 when passing A equals 2 and B equals 2", () => {
+        // Arrange
++       const a = 2;
++       const b = 2;
 
-    // Assert
-    expect(true).toBeTruthy();
-  });
+        // Act
++       const result = calculator.add(a, b);
 
-+ it('should fail spec', () => {
-+   // Arrange
+        // Assert
+-       expect(true).toBeTruthy();
++       expect(result).toBe(4);
+      });
 
-+   // Act
+-     it('should fail spec', () => {
+-       // Arrange
 
-+   // Assert
-+   expect(true).toBeFalsy();
-+ });
+-       // Act
+
+-       // Assert
+-       expect(true).toBeFalsy();
+-     });
++  });
 });
+
 ```
 
-# External config
+- Now, we need passing a method as parameter, whatever it is, we only want to check that it was called and with which arguments:
 
-- One step over, we could be moved jest config outside `package.json` to improve maintainability.
+### ./src/calculator.ts
 
-- Move config to `config/test/jest.json` file:
+```diff
+- export const add = (a, b) => a + b
++ export const add = (a, b, isLowerThanFive) => {
++   const result = a + b;
 
-### ./package.json
++   if (result < 5) {
++     isLowerThanFive(result);
++   }
+
++   return result;
++ }
+
+```
+
+- How we could test it? Using a `spy`:
+
+### ./src/calculator.spec.ts
+
+```diff
+import * as calculator from "./calculator";
+
+describe("Calculator tests", () => {
+  describe("add", () => {
+    it("should return 4 when passing A equals 2 and B equals 2", () => {
+      // Arrange
+      const a = 2;
+      const b = 2;
++     const isLowerThanFive = jest.fn();
+
+      // Act
+-     const result = calculator.add(a, b);
++     const result = calculator.add(a, b, isLowerThanFive);
+
+      // Assert
+      expect(result).toBe(4);
+    });
+
++   it('should call to isLowerThanFive when passing A equals 2 and B equals 2', () => {
++     // Arrange
++     const a = 2;
++     const b = 2;
++     const isLowerThanFive = jest.fn();
+
++     // Act
++     const result = calculator.add(a, b, isLowerThanFive);
+
++     // Assert
++     expect(isLowerThanFive).toHaveBeenCalled();
++     expect(isLowerThanFive).toHaveBeenCalledWith(4);
++   })
+  });
+});
+
+```
+
+> If we set `a = 3` this test fail.
+
+- Sometimes, we need to `import` dependencies that we can't pass throught function parameters, we need to import as `external dependency`:
+
+### ./src/business.ts
+
+```javascript
+export const isLowerThanFive = (value) => {
+  console.log(`The value: ${value} is lower than 5`)
+}
+
+```
+
+- Use it:
+
+### ./src/calculator.ts
+
+```diff
++ import { isLowerThanFive } from './business'
+
+- export const add = (a, b, isLowerThanFive) => {
++ export const add = (a, b) => {
+  const result = a + b;
+
+  if(result < 5) {
+    isLowerThanFive(result);
+  }
+
+  return result;
+}
+
+```
+
+- Same as before, we only want to test that function was called and with which arguments, but this time is an `external dependency`, so we need a stub:
+
+### ./src/calculator.spec.ts
+
+```diff
+import * as calculator from './calculator'
++ import * as business from './business'
+
+describe('Calculator tests', () => {
+  describe('add', () => {
+    it('should return 4 when passing A equals 2 and B equals 2', () => {
+      // Arrange
+      const a = 2;
+      const b = 2;
+-     const isLowerThanFive = jest.fn();
+
+      // Act
+-     const result = calculator.add(a, b, isLowerThanFive);
++     const result = calculator.add(a, b);
+
+      // Assert
+      expect(result).toBe(4)
+    })
+
+    it('should call to isLowerThanFive when passing A equals 2 and B equals 2', () => {
+      // Arrange
+      const a = 2;
+      const b = 2;
+-     const isLowerThanFive = jest.fn();
++     const isLowerThanFive = jest.spyOn(business, 'isLowerThanFive');
+
+      // Act
+-     const result = calculator.add(a, b, isLowerThanFive);
++     const result = calculator.add(a, b);
+
+      // Assert
+      expect(isLowerThanFive).toHaveBeenCalled();
+      expect(isLowerThanFive).toHaveBeenCalledWith(4);
+    })
+  })
+})
+
+```
+
+> Note: As we see in `console`, the `stub` doesn't replace original function behaviour. We have to mock it if we need it.
+
+- Mocking original behaviour:
+
+### ./src/calculator.spec.ts
 
 ```diff
 ...
-- },
-+ }
-- "jest": {
--   "preset": "ts-jest",
--   "restoreMocks": true
-- }
-}
+
+    it('should call to isLowerThanFive when passing A equals 2 and B equals 2', () => {
+      // Arrange
+      const a = 2;
+      const b = 2;
+-     const isLowerThanFive = jest.spyOn(business, 'isLowerThanFive');
++     const isLowerThanFive = jest.spyOn(business, 'isLowerThanFive')
++       .mockImplementation((result) => console.log(`This is the result ${result}`));
+
+      // Act
+      const result = calculator.add(a, b);
+
+      // Assert
+      expect(isLowerThanFive).toHaveBeenCalled();
+      expect(isLowerThanFive).toHaveBeenCalledWith(4);
+    })
 
 ```
 
-### ./config/test/jest.json
+- Finally, we could have a business with too much methods, or even, it is exporting an object:
 
-```json
-{
-  "preset": "ts-jest",
-  "restoreMocks": true
-}
-
-```
-
-- We only need a detail to keep working with this Jest config, we need to use `rootDir`:
-
-### ./config/test/jest.json
+### ./src/business.ts
 
 ```diff
-{
-+ "rootDir": "../../",
-  "preset": "ts-jest",
-  "restoreMocks": true
+- export const isLowerThanFive = (value) => {
++ export const isLowerThan = (value, max) => {
+- console.log(`The value: ${value} is lower than 5`)
++ console.log(`The value: ${value} is lower than ${max}`)
 }
+
++ export const max = 6
+
 ```
 
-- And use that file:
+- Use it:
 
-### ./package.json
+### ./src/calculator.ts
+
 ```diff
-{
-  ...
-  "scripts": {
-    ...
--   "test": "jest --verbose",
-+   "test": "jest -c ./config/test/jest.json --verbose",
--   "test:watch": "jest --verbose --watchAll -i"
-+   "test:watch": "jest -c ./config/test/jest.json --verbose --watchAll -i"
-  },
-  ...
+- import { isLowerThanFive } from './business'
++ import { isLowerThan, max } from './business'
+
+export const add = (a, b) => {
+  const result = a + b;
+
+- if(result < 5) {
++ if(result < max) {
+-   isLowerThanFive(result);
++   isLowerThan(result, max);
+  }
+
+  return result;
 }
+
 ```
 
-- Running specs again:
+- In this case, we need to mock the whole module:
 
-```bash
-npm run test:watch
+> IMPORTANT: codesandbox will not compile `jest.mock` this code is only to show the syntax.
+
+### ./src/calculator.spec.ts
+
+```diff
+import * as calculator from './calculator'
+import * as business from './business'
+
++ jest.mock('./business', () => ({
++   isLowerThan: jest.fn(),
++   max: 7,
++ }))
+
+describe('Calculator tests', () => {
+  describe('add', () => {
+    it('should return 4 when passing A equals 2 and B equals 2', () => {
+      // Arrange
+      const a = 2;
+      const b = 2;
+
+      // Act
+      const result = calculator.add(a, b);
+
+      // Assert
+      expect(result).toBe(4)
+    })
+
+-   it('should call to isLowerThanFive when passing A equals 2 and B equals 2', () => {
++   it('should call to isLowerThan when passing A equals 2 and B equals 2', () => {
+      // Arrange
+      const a = 2;
+      const b = 2;
+-     const isLowerThanFive = jest.spyOn(business, 'isLowerThanFive')
+-       .mockImplementation((result) => console.log(`This is the result ${result}`));
+
+      // Act
+      const result = calculator.add(a, b);
+
+      // Assert
+-     expect(isLowerThanFive).toHaveBeenCalled();
++     expect(business.isLowerThan).toHaveBeenCalled();
+-     expect(isLowerThanFive).toHaveBeenCalledWith(4);
++     expect(business.isLowerThan).toHaveBeenCalledWith(4, 7);
+    })
+  })
+})
+
 ```
 
+> If we change max value to 3. spec fails.
 
 # About Basefactor + Lemoncode
 
