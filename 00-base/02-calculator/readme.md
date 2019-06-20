@@ -264,8 +264,6 @@ export const add = (a, b) => {
 
 - In this case, we need to mock the whole module:
 
-> IMPORTANT: codesandbox will not compile `jest.mock` this code is only to show the syntax.
-
 ### ./src/calculator.spec.ts
 
 ```diff
