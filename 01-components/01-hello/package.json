@@ -1,5 +1,5 @@
 {
-  "name": "jest-testing-by-sample",
+  "name": "react-testing-by-example",
   "version": "1.0.0",
   "description": "Learn testing by sample using jest + react-testing-library, each of the samples contains a readme.md file that indicates the purpose of the sample plus an step by step guide to reproduce it.",
   "main": "index.js",

@@ -1,4 +1,4 @@
-# react-testing-library-by-example
+# react-testing-by-example
 
 wip...
 
