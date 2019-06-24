@@ -13,6 +13,5 @@
     "skipLibCheck": true,
     "esModuleInterop": true
   },
-  "compileOnSave": true,
-  "exclude": ["node_modules"]
+  "include": ["./src/**/*"]
 }
