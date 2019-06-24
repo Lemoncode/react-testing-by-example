@@ -1,11 +1,10 @@
 import * as React from 'react';
 
 interface Props {
-  person : string;
+  person: string;
 }
 
-export const SayHello = (props : Props) => {
-  return (
-    <h1>Hello {props.person}!</h1>
-  )
-}
+export const SayHello: React.FunctionComponent<Props> = props => {
+  const { person } = props;
+  return <h1>Hello {person}!</h1>;
+};

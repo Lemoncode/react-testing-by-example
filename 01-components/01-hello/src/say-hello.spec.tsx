@@ -2,7 +2,7 @@ import * as React from 'react';
 import { render } from '@testing-library/react';
 import { SayHello } from './say-hello';
 
-describe('SayHello component', () => {
+describe('SayHello component specs', () => {
   it('should display the person name', () => {
     // Arrange
     const person = 'John';

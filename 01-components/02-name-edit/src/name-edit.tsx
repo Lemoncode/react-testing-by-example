@@ -1,12 +1,16 @@
 import * as React from 'react';
 
-export const NameEdit = () => {
-  const [username, setUsername]  = React.useState('');
+export const NameEdit: React.FunctionComponent = () => {
+  const [userName, setUserName] = React.useState('');
 
-  return(
+  return (
     <>
-      <h3 data-testid="username-label">{username}</h3>
-      <input data-testid="username-input" value={username} onChange={(e) => setUsername(e.target.value)}/>
+      <h3 data-testid="userName-label">{userName}</h3>
+      <input
+        data-testid="userName-input"
+        value={userName}
+        onChange={e => setUserName(e.target.value)}
+      />
     </>
-  )
-}
+  );
+};

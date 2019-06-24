@@ -23,7 +23,7 @@ npm install @testing-library/react -D
 
 ### ./src/say-hello.tsx
 
-```tsx
+```javascript
 import * as React from 'react';
 
 interface Props {
@@ -41,14 +41,14 @@ export const SayHello: React.FunctionComponent<Props> = props => {
 
 ### ./src/say-hello.spec.tsx
 
-```tsx
+```javascript
 import * as React from 'react';
 import { render, cleanup } from '@testing-library/react';
 import { SayHello } from './say-hello';
 
 afterEach(cleanup);
 
-describe('SayHello component', () => {
+describe('SayHello component specs', () => {
   it('should display the person name', () => {
     // Arrange
     const person = 'John';
@@ -125,7 +125,7 @@ import { SayHello } from './say-hello';
 ```
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SayHello component should display the person name using snapshot testing 1`] = `
+exports[`SayHello component specs should display the person name using snapshot testing 1`] = `
 <DocumentFragment>
   <h1>
     Hello John!

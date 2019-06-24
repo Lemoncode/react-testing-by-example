@@ -1,28 +1,35 @@
 import * as React from 'react';
-import {
-  render,
-  cleanup,
-  fireEvent,
-} from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { NameEdit } from './name-edit';
 
-// automatically unmount and cleanup DOM after the test is finished.
-afterEach(cleanup)
+describe('NameEdit component specs', () => {
+  it('should display a h3 and input elements with empty userName value', () => {
+    // Arrange
 
-describe('NamEdit component', () => {
-  it('Should update name h3 element when input changes', () => {
-    const {getByTestId} = render(<NameEdit/>);
+    // Act
+    const { getByTestId } = render(<NameEdit />);
 
-    // Search for username h3
-    const usernameLabelElement  = getByTestId('username-label');
-    // Search for username input
-    const usernameInputElement  = getByTestId('username-input');
+    const labelElement = getByTestId('userName-label');
+    const inputElement = getByTestId('userName-input') as HTMLInputElement;
 
-    fireEvent.change(usernameInputElement, {target: {value: 'John'}});
+    // Assert
+    expect(labelElement.textContent).toEqual('');
+    expect(inputElement.value).toEqual('');
+  });
 
-    // Check that both h3 and input contains the text John
-    expect(usernameLabelElement.innerHTML).toEqual('John');
-    expect(usernameInputElement["value"]).toEqual('John');
+  it('should update h3 text when input changes', () => {
+    // Arrange
 
-  })
+    // Act
+    const { getByTestId } = render(<NameEdit />);
+
+    const labelElement = getByTestId('userName-label');
+    const inputElement = getByTestId('userName-input') as HTMLInputElement;
+
+    fireEvent.change(inputElement, { target: { value: 'John' } });
+
+    // Assert
+    expect(labelElement.textContent).toEqual('John');
+    expect(inputElement.value).toEqual('John');
+  });
 });

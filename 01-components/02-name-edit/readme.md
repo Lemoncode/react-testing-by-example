@@ -1,90 +1,170 @@
-#01 Name Edit
+# 01 Name Edit
 
-Let's start playing with DOM eventsm, in this sample we will create a name editor component:
+Let's start playing with DOM events. In this example we will create a name editor component.
+
+We will start from `01-hello`.
+
+Summary steps:
 
 - It will display a given name.
 - It will let us edit that name.
-
-We will be playing with dom events (on change).
+- We will be playing with dom events (on change).
 
 # Steps
 
-- Copy the content from _01 hello_ and execute _npm install_
+- `npm install` to install previous sample packages:
 
 ```bash
 npm install
 ```
+
 - Let's create our _nameEdit_ component.
 
-_./src/name-edit.tsx_
+### ./src/name-edit.tsx
 
-```tsx
+```javascript
 import * as React from 'react';
 
-export const NameEdit = () => {
-  const [username, setUsername]  = React.useState('');
+export const NameEdit: React.FunctionComponent = () => {
+  const [userName, setUserName] = React.useState('');
 
   return (
     <>
-      <h3>{username}</h3>
-      <input value={username} onChange={(e) => setUsername(e.target.value)}/>
+      <h3>{userName}</h3>
+      <input value={userName} onChange={e => setUserName(e.target.value)} />
     </>
-  )
-}
+  );
+};
+
 ```
 
 - Let's instantiate this component in our app.
 
-_./src/app.tsx_
+### ./src/app.tsx
 
 ```diff
 import * as React from 'react';
-+ import {NameEdit} from './name-edit'
++ import { NameEdit } from './name-edit';
 
-export const App: React.StatelessComponent = (props) => (
+export const App: React.FunctionComponent = props => (
   <div>
     <h3>Hello !</h3>
-+   <NameEdit/>
++   <NameEdit />
   </div>
 );
+
 ```
 
 - Let's start implementing a test, the scenario we want to test:
   - Render the _NameEdit_ component.
   - Get the input element.
   - Trigger an update over that input.
-  - Check that we get that update on the _h3_ element that is displaying the username.
+  - Check that we get that update on the _h3_ element that is displaying the userName.
 
-_./src/name-edit.spec.tsx_
+- If we try use `getByText`:
 
-```tsx
+### ./src/name-edit.spec.tsx
+
+```javascript
 import * as React from 'react';
-import {
-  render,
-  cleanup,
-  fireEvent,
-} from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { NameEdit } from './name-edit';
 
-// automatically unmount and cleanup DOM after the test is finished.
-afterEach(cleanup)
+describe('NameEdit component specs', () => {
+  it('should display a label and input elements with empty userName value', () => {
+    // Arrange
 
-describe('NamEdit component', () => {
-  it('Should update name h3 element when input changes', () => {
-    const {getByTestId} = render(<NameEdit/>);
+    // Act
+    const { getByText } = render(<NameEdit />);
 
-    // Search for username h3
-    const usernameLabelElement  = getByTestId('username-label');
-    // Search for username input
-    const usernameInputElement  = getByTestId('username-input');
+    const labelElement = getByText('');
 
-    fireEvent.change(usernameInputElement, {target: {value: 'John'}});
+    // Assert
 
-    // Check that both h3 and input contains the text John
-    expect(usernameLabelElement.innerHTML).toEqual('John');
-    expect(usernameInputElement["value"]).toEqual('John');
-  })
+  });
 });
+
+```
+
+- We could add a `testid` attribute to create different selectors:
+
+### ./src/name-edit.tsx
+
+```diff
+import * as React from 'react';
+
+export const NameEdit: React.FunctionComponent = () => {
+  const [userName, setUserName] = React.useState('');
+
+  return (
+    <>
+-     <h3>{userName}</h3>
++     <h3 data-testid="userName-label">{userName}</h3>
+-     <input value={userName} onChange={e => setUserName(e.target.value)} />
++     <input
++       data-testid="userName-input"
++       value={userName}
++       onChange={e => setUserName(e.target.value)}
++     />
+    </>
+  );
+};
+
+```
+
+### ./src/name-edit.spec.tsx
+
+```diff
+import * as React from 'react';
+import { render } from '@testing-library/react';
+import { NameEdit } from './name-edit';
+
+describe('NameEdit component specs', () => {
+  it('should display a h3 and input elements with empty userName value', () => {
+    // Arrange
+
+    // Act
+    const { getByText } = render(<NameEdit />);
+
+-   const labelElement = getByText('');
++   const labelElement = getByTestId('userName-label');
++   const inputElement = getByTestId('userName-input') as HTMLInputElement;
+
+    // Assert
++   expect(labelElement.textContent).toEqual('');
++   expect(inputElement.value).toEqual('');
+  });
+});
+
+```
+
+- should update h3 text when input changes:
+
+### ./src/name-edit.spec.tsx
+
+```diff
+import * as React from 'react';
+- import { render } from '@testing-library/react';
++ import { render, fireEvent } from '@testing-library/react';
+import { NameEdit } from './name-edit';
+
+...
++ it('should update h3 text when input changes', () => {
++   // Arrange
+
++   // Act
++   const { getByTestId } = render(<NameEdit />);
+
++   const labelElement = getByTestId('userName-label');
++   const inputElement = getByTestId('userName-input') as HTMLInputElement;
+
++   fireEvent.change(inputElement, { target: { value: 'John' } });
+
++   // Assert
++   expect(labelElement.textContent).toEqual('John');
++   expect(inputElement.value).toEqual('John');
++ });
+
 ```
 
 # About Basefactor + Lemoncode
