@@ -36,8 +36,9 @@ import { Member } from './api-model';
 
 const url = 'https://api.github.com/orgs/lemoncode/members';
 
-export const getMembers = (): Promise<Member> =>
+export const getMembers = (): Promise<Member[]> =>
   Axios.get(url).then(({ data }) => data);
+
 ```
 
 - Let's use it:
@@ -284,6 +285,29 @@ export const mapToMemberVMList = (
 ...
 
 ```
+
+- It's time to use it:
+
+### ./src/app.tsx
+
+```diff
+import * as React from 'react';
+import { getMembers } from './api';
++ import { mapToMemberVMList } from './mapper';
+
+export const App: React.FunctionComponent = () => {
+  React.useEffect(() => {
+    getMembers().then(members => {
+-     console.log(members);
++     console.log(mapToMemberVMList(members));
+    });
+  });
+
+  return <h1>React testing by sample</h1>;
+};
+
+```
+
 
 # About Basefactor + Lemoncode
 
