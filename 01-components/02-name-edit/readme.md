@@ -1,4 +1,4 @@
-# 01 Name Edit
+# 02 Name Edit
 
 Let's start playing with DOM events. In this example we will create a name editor component.
 
