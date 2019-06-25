@@ -1,122 +1,204 @@
-#01 Fetch
+# 04 Fetch
 
 Let's hop into testing components that get involved asynchronous call execution.
 
+We will start from `03-integration`.
+
 # Steps
 
-- Copy the content from _03 integration_ and execute _npm install_
+- `npm install` to install previous sample packages:
 
 ```bash
 npm install
 ```
 
-- Now we will create a file that will contain a call to a remote api that returns a list
-  of names.
+- Now we will create a file that it will contain a call a remote api that returns a list of names.
 
-_./src/name-api.ts_
+### ./src/name-api.ts
 
-```typescript
-export const getNameCollection = (): Promise<Object[]> =>
-  fetch("https://jsonplaceholder.typicode.com/users").then(response =>
-    response.json()
-  );
+```javascript
+import Axios from 'axios';
+
+const url = 'https://jsonplaceholder.typicode.com/users';
+
+export const getNameCollection = (): Promise<string[]> =>
+  Axios.get(url).then(({ data }) => data.map(user => user.name));
+
 ```
 
 - Let's create a component that make use of this api and display that list.
 
-_./src/name-collection.tsx_
+### ./src/name-collection.tsx
 
-```tsx
-import * as React from "react";
-import { getNameCollection } from "./name-api";
+```javascript
+import * as React from 'react';
+import { getNameCollection } from './name-api';
 
-export const NameCollection = () => {
+export const NameCollection: React.FunctionComponent = () => {
   const [nameCollection, setNameCollection] = React.useState([]);
 
   React.useEffect(() => {
-    getNameCollection.then(data => setNameCollection(data));
+    getNameCollection().then(names => setNameCollection(names));
   }, []);
 
   return (
     <ul>
-      {nameCollection.map((user, index) => (
-        <li key={index}>{user.name}</li>
+      {nameCollection.map((name, index) => (
+        <li key={index}>{name}</li>
       ))}
     </ul>
   );
 };
+
 ```
 
-- Now let's instantiate this component in the _app.tsx_ file.
+- Now let's use it in the _app.tsx_ file.
 
-_./src/app.tsx_
+### ./src/app.tsx
 
 ```diff
 import * as React from 'react';
-import {NameEdit} from './name-edit';
-+ import {NameCollection} from './name-collection'
+import { NameEdit } from './name-edit';
++ import { NameCollection } from './name-collection';
 
-export const App: React.StatelessComponent = (props) => (
+export const App: React.FunctionComponent = props => (
   <div>
     <h3>Hello !</h3>
-    <NameEdit/>
-+    <NameCollection/>
+    <NameEdit />
++   <NameCollection />
   </div>
 );
+
 ```
 
 - Time to test this async piece :), let's create a file called _name-collection.spec.tsx_
 
-_./src/name-collection.spec.tsx_
+### ./src/name-collection.spec.tsx
 
-```typescript
-import * as React from "react";
-import { render, cleanup, waitForElement } from "@testing-library/react";
-import { NameCollection } from "./name-collection";
-import * as nameApi from "./name-api";
+```javascript
+import * as React from 'react';
+import { render } from '@testing-library/react';
+import { NameCollection } from './name-collection';
 
-// automatically unmount and cleanup DOM after the test is finished.
-afterEach(cleanup);
+describe('NameCollection component specs', () => {
+  it('', () => {
+    // Arrange
 
-describe("Name collection component", () => {
-  it("Should display a list with just one name after async call gets resolved", async () => {
-    const fetchMembersStub = jest
-      .spyOn(nameApi, "getNameCollection")
-      .mockResolvedValue([
-        {
-          id: 1,
-          name: "Leanne Graham",
-          username: "Bret",
-          email: "Sincere@april.biz",
-          address: {
-            street: "Kulas Light",
-            suite: "Apt. 556",
-            city: "Gwenborough",
-            zipcode: "92998-3874",
-            geo: {
-              lat: "-37.3159",
-              lng: "81.1496"
-            }
-          },
-          phone: "1-770-736-8031 x56442",
-          website: "hildegard.org",
-          company: {
-            name: "Romaguera-Crona",
-            catchPhrase: "Multi-layered client-server neural-net",
-            bs: "harness real-time e-markets"
-          }
-        }
-      ]);
+    // Act
 
-    const { getByText } = render(<NameCollection />);
+    // Assert
+  })
+});
+```
 
-    await waitForElement(() => getByText("Leanne Graham"));
+- should display a list with one item when it mounts the component and it resolves the async call:
 
-    const liElement = getByText("Leanne Graham");
+### ./src/name-collection.spec.tsx
 
-    expect(liElement.nodeName).toBe("LI");
+```diff
+import * as React from 'react';
+- import { render } from '@testing-library/react';
++ import { render, waitForElement } from '@testing-library/react';
++ import * as api from './name-api';
+import { NameCollection } from './name-collection';
+
+describe('NameCollection component specs', () => {
+- it('', () => {
++ it('should display a list with one item when it mounts the component and it resolves the async call', async () => {
+    // Arrange
++   const getStub = jest
++     .spyOn(api, 'getNameCollection')
++     .mockResolvedValue(['John Doe']);
+
+    // Act
++   const { getByText } = render(<NameCollection />);
+
++   await waitForElement(() => getByText('John Doe'));
+
++   const element = getByText('John Doe');
+
+    // Assert
++   expect(getStub).toHaveBeenCalled();
++   expect(element).not.toBeUndefined();
+  })
+});
+
+```
+
+- We will focus on check only that a user will check without see the implementation. If we want to test how many element will create:
+
+### ./src/name-collection.tsx
+
+```diff
+...
+
+  return (
+    <ul>
+      {nameCollection.map((name, index) => (
+-       <li key={index}>{name}</li>
++       <li key={index} data-testid="name">
++         {name}
++       </li>
+      ))}
+    </ul>
+  );
+};
+
+```
+
+### ./src/name-collection.spec.tsx
+
+```diff
+...
+
+    // Act
+-   const { getByText } = render(<NameCollection />);
++   const { getAllByTestId } = render(<NameCollection />);
+
+-   await waitForElement(() => getByText('John Doe'));
++   await waitForElement(() => getAllByTestId('name'));
+
+-   const element = getByText('John Doe');
++   const elements = getAllByTestId('name');
+
+    // Assert
+    expect(getStub).toHaveBeenCalled();
+-   expect(element).not.toBeUndefined();
++   expect(elements.length).toEqual(1);
++   expect(elements[0].textContent).toEqual('John Doe');
   });
 });
+
+```
+
+- should display a list with two items when it mounts the component and it resolves the async call:
+
+### ./src/name-collection.spec.tsx
+
+```diff
+...
+
++ it('should display a list with two items when it mounts the component and it resolves the async call', async () => {
++   // Arrange
++   const getStub = jest
++     .spyOn(api, 'getNameCollection')
++     .mockResolvedValue(['John Doe', 'Jane Doe']);
+
++   // Act
++   const { getAllByTestId } = render(<NameCollection />);
+
++   await waitForElement(() => getAllByTestId('name'));
+
++   const elements = getAllByTestId('name');
+
++   // Assert
++   expect(getStub).toHaveBeenCalled();
++   expect(elements.length).toEqual(2);
++   expect(elements[0].textContent).toEqual('John Doe');
++   expect(elements[1].textContent).toEqual('Jane Doe');
++ });
+...
+
 ```
 
 # About Basefactor + Lemoncode

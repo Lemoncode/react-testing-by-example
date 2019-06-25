@@ -1,48 +1,45 @@
-import * as React from "react";
-import { render, cleanup, waitForElement } from "@testing-library/react";
-import { NameCollection } from "./name-collection";
-import * as nameApi from "./name-api";
+import * as React from 'react';
+import { render, waitForElement } from '@testing-library/react';
+import * as api from './name-api';
+import { NameCollection } from './name-collection';
 
-// automatically unmount and cleanup DOM after the test is finished.
-afterEach(cleanup);
+describe('NameCollection component specs', () => {
+  it('should display a list with one item when it mounts the component and it resolves the async call', async () => {
+    // Arrange
+    const getStub = jest
+      .spyOn(api, 'getNameCollection')
+      .mockResolvedValue(['John Doe']);
 
-// WIP !! not finished
-describe("Name collection component", () => {
-  it("Should display a list of names after async call gets resolved", async () => {
-    const fetchMembersStub = jest
-      .spyOn(nameApi, "getNameCollection")
-      .mockResolvedValue([
-        {
-          id: 1,
-          name: "Leanne Graham",
-          username: "Bret",
-          email: "Sincere@april.biz",
-          address: {
-            street: "Kulas Light",
-            suite: "Apt. 556",
-            city: "Gwenborough",
-            zipcode: "92998-3874",
-            geo: {
-              lat: "-37.3159",
-              lng: "81.1496"
-            }
-          },
-          phone: "1-770-736-8031 x56442",
-          website: "hildegard.org",
-          company: {
-            name: "Romaguera-Crona",
-            catchPhrase: "Multi-layered client-server neural-net",
-            bs: "harness real-time e-markets"
-          }
-        }
-      ]);
+    // Act
+    const { getAllByTestId } = render(<NameCollection />);
 
-    const { getByText } = render(<NameCollection />);
+    await waitForElement(() => getAllByTestId('name'));
 
-    await waitForElement(() => getByText("Leanne Graham"));
+    const elements = getAllByTestId('name');
 
-    const liElement = getByText("Leanne Graham");
+    // Assert
+    expect(getStub).toHaveBeenCalled();
+    expect(elements.length).toEqual(1);
+    expect(elements[0].textContent).toEqual('John Doe');
+  });
 
-    expect(liElement.nodeName).toBe("LI");
+  it('should display a list with two items when it mounts the component and it resolves the async call', async () => {
+    // Arrange
+    const getStub = jest
+      .spyOn(api, 'getNameCollection')
+      .mockResolvedValue(['John Doe', 'Jane Doe']);
+
+    // Act
+    const { getAllByTestId } = render(<NameCollection />);
+
+    await waitForElement(() => getAllByTestId('name'));
+
+    const elements = getAllByTestId('name');
+
+    // Assert
+    expect(getStub).toHaveBeenCalled();
+    expect(elements.length).toEqual(2);
+    expect(elements[0].textContent).toEqual('John Doe');
+    expect(elements[1].textContent).toEqual('Jane Doe');
   });
 });

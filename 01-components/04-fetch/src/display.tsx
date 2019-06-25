@@ -1,13 +1,11 @@
 import * as React from 'react';
 
 interface Props {
-  username: string;
+  userName: string;
 }
 
-export const Display = (props : Props) => {
-  const {username} = props;
+export const Display: React.FunctionComponent<Props> = props => {
+  const { userName } = props;
 
-  return (
-    <h3 data-testid="username-label">{username}</h3>
-  )
-}
+  return <h3 data-testid="userName-label">{userName}</h3>;
+};
