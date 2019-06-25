@@ -1,88 +1,96 @@
-#01 Integration testing
+# 03 Integration testing
 
 So far we have just unit tested components, what about making an integration test?
 We can mount a bunch of components and test them all together !
 
+We will start from `02-name-edit`.
+
 # Steps
 
-- Copy the content from _02 name-edit_ and execute _npm install_
+- `npm install` to install previous sample packages:
 
 ```bash
 npm install
 ```
-- Now we will split our _name-edit_ component and create a _display_ and _edit_
-components.
 
-_./src/display.tsx_
+- Now we will split our _name-edit_ component and we create the _display_ and _edit_ components.
 
-```tsx
+### ./src/display.tsx
+
+```javascript
 import * as React from 'react';
 
 interface Props {
-  username: string;
+  userName: string;
 }
 
-export const Display = (props : Props) => {
-  const {username} = props;
+export const Display: React.FunctionComponent<Props> = props => {
+  const { userName } = props;
 
-  return (
-    <h3 data-testid="username-label">{username}</h3>
-  )
-}
+  return <h3 data-testid="userName-label">{userName}</h3>;
+};
+
 ```
 
-_./src/edit.tsx_
+### ./src/edit.tsx
 
-```tsx
+```javascript
 import * as React from 'react';
 
 interface Props {
-  username: string;
-  onSetUsername : (username: string) => void;
+  userName: string;
+  onSetUserName: (userName: string) => void;
 }
 
-export const Edit  = (props : Props) => {
-  const {username, onSetUsername} = props;
+export const Edit: React.FunctionComponent<Props> = props => {
+  const { userName, onSetUserName } = props;
 
   return (
     <input
-      data-testid="username-input"
-      value={username}
-      onChange={(e) => onSetUsername(e.target.value)}
-      />
-  )
-}
+      data-testid="userName-input"
+      value={userName}
+      onChange={e => onSetUserName(e.target.value)}
+    />
+  );
+};
+
 ```
 
-_./src/name-edit.tsx_
+- Update `name-edit` component:
+
+### ./src/name-edit.tsx
 
 ```diff
 import * as React from 'react';
-+ import {Display} from './display';
-+ import {Edit} from './edit';
++ import { Display } from './display';
++ import { Edit } from './edit';
 
-export const NameEdit = () => {
-  const [username, setUsername]  = React.useState('');
+export const NameEdit: React.FunctionComponent = () => {
+  const [userName, setUserName] = React.useState('');
 
-  return(
+  return (
     <>
--      <h3 data-testid="username-label">{username}</h3>
-+      <Display username={username}/>
--      <input data-testid="username-input" value={username} onChange={(e) => setUsername(e.target.value)}/>
-+      <Edit username={username} onSetUsername={setUsername}/>
+-     <h3 data-testid="userName-label">{userName}</h3>
++     <Display userName={userName} />
+-     <input
+-       data-testid="userName-input"
+-       value={userName}
+-       onChange={e => setUserName(e.target.value)}
+-     />
++     <Edit userName={userName} onSetUserName={setUserName} />
     </>
-  )
-}
+  );
+};
+
 ```
 
 - Now.. do we need to make any change on the _name-edit_ test? Let's see...
 
 ```bash
-npm start
+npm run test:watch
 ```
 
-Nope ! Wow ! how does this work? React Testing library just mounts the whole component
-and since we are keeping the same test id's the test is still valid as is.
+Nope ! Wow ! how does this work? React Testing library just mounts the whole component and since we are keeping the same test id's the test is still valid as is.
 
 # About Basefactor + Lemoncode
 

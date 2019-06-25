@@ -1,18 +1,18 @@
 import * as React from 'react';
 
 interface Props {
-  username: string;
-  onSetUsername : (username: string) => void;
+  userName: string;
+  onSetUserName: (userName: string) => void;
 }
 
-export const Edit  = (props : Props) => {
-  const {username, onSetUsername} = props;
+export const Edit: React.FunctionComponent<Props> = props => {
+  const { userName, onSetUserName } = props;
 
   return (
     <input
-      data-testid="username-input"
-      value={username}
-      onChange={(e) => onSetUsername(e.target.value)}
-      />
-  )
-}
+      data-testid="userName-input"
+      value={userName}
+      onChange={e => onSetUserName(e.target.value)}
+    />
+  );
+};

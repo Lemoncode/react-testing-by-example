@@ -1,15 +1,14 @@
 import * as React from 'react';
-import {Display} from './display';
-import {Edit} from './edit';
+import { Display } from './display';
+import { Edit } from './edit';
 
+export const NameEdit: React.FunctionComponent = () => {
+  const [userName, setUserName] = React.useState('');
 
-export const NameEdit = () => {
-  const [username, setUsername]  = React.useState('');
-
-  return(
+  return (
     <>
-      <Display username={username}/>
-      <Edit username={username} onSetUsername={setUsername}/>
+      <Display userName={userName} />
+      <Edit userName={userName} onSetUserName={setUserName} />
     </>
-  )
-}
+  );
+};
