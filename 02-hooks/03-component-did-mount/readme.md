@@ -27,7 +27,7 @@ export const useUser = (initialUser: User) => {
 +   // Simulate async call
 +   setTimeout(() => {
 +     setUser({ name: 'Jane', surname: 'Smith' });
-+   }, 3000);
++   }, 500);
 + }, []);
 
   return {
