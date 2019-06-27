@@ -55,7 +55,7 @@ describe('useUser specs', () => {
 
     // Act
 
-    // Asser
+    // Assert
 
   });
 });
@@ -83,7 +83,7 @@ describe('useUser specs', () => {
     // Act
 +   const { result } = renderHook(() => useUser(initialUser));
 
-    // Asser
+    // Assert
 +   expect(result.current.user).toEqual(initialUser);
 +   expect(result.current.setUser).toEqual(expect.any(Function));
   });
@@ -113,7 +113,8 @@ describe('useUser specs', () => {
 +       surname: 'updated surname',
 +     });
 +   });
-+   // Asser
+
++   // Assert
 +   expect(result.current.user).toEqual({
 +     name: 'updated name',
 +     surname: 'updated surname',
