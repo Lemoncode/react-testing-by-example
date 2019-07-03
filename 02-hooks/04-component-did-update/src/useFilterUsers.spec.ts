@@ -32,16 +32,15 @@ describe('useFilterUsers specs', () => {
       .mockResolvedValue(['John Doe', 'Jane Doe']);
 
     // Act
-    const { result, waitForNextUpdate, rerender } = renderHook(() =>
+    const { result, waitForNextUpdate } = renderHook(() =>
       useFilterUsers(filter)
     );
 
     // Assert
     expect(result.current.users).toEqual([]);
 
+    renderHook(() => result.current.setFilter('doe'));
     await waitForNextUpdate();
-
-    rerender('doe');
 
     expect(getUsersByFilterSpy).toHaveBeenCalledWith('doe');
     expect(getUsersByFilterSpy).toHaveBeenCalledTimes(1);
@@ -53,22 +52,22 @@ describe('useFilterUsers specs', () => {
     const filter = 'doe';
     const getUsersByFilterSpy = jest
       .spyOn(api, 'getUsersByFilter')
-      .mockResolvedValue(['Jane Smith']);
+      .mockResolvedValue(['John Doe', 'Jane Doe']);
 
     // Act
-    const { result, waitForNextUpdate, rerender } = renderHook(() =>
+    const { result, waitForNextUpdate } = renderHook(() =>
       useFilterUsers(filter)
     );
 
     // Assert
     expect(result.current.users).toEqual([]);
 
-    rerender('smith');
+    renderHook(() => result.current.setFilter('smith'));
     await waitForNextUpdate();
 
     expect(getUsersByFilterSpy).toHaveBeenCalledWith('doe');
     expect(getUsersByFilterSpy).toHaveBeenCalledWith('smith');
     expect(getUsersByFilterSpy).toHaveBeenCalledTimes(2);
-    expect(result.current.users).toEqual(['Jane Smith']);
+    expect(result.current.users).toEqual(['John Doe', 'Jane Doe']);
   });
 });
