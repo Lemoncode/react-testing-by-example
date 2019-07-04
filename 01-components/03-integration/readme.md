@@ -84,7 +84,7 @@ export const NameEdit: React.FunctionComponent = () => {
 
 ```
 
-- Now.. do we need to make any change on the _name-edit_ test? Let's see...
+- Now, do we need to make any change on the _name-edit_ test? Let's see...
 
 ```bash
 npm run test:watch
