@@ -34,20 +34,19 @@ export const getUsersByFilter = filter =>
 import * as React from 'react';
 import { getUsersByFilter } from './api';
 
-export const useFilterUsers = () => {
+export const useFilterUsers = initialFilter => {
   const [users, setUsers] = React.useState([]);
+  const [filter, setFilter] = React.useState(initialFilter);
 
-  const filterUsers = filter => {
-    React.useEffect(() => {
-      getUsersByFilter(filter).then(newUsers => {
-        setUsers(newUsers);
-      });
-    }, [filter]);
-  };
+  React.useEffect(() => {
+    getUsersByFilter(filter).then(newUsers => {
+      setUsers(newUsers);
+    });
+  }, [filter]);
 
   return {
     users,
-    filterUsers,
+    setFilter,
   };
 };
 
@@ -59,6 +58,7 @@ export const useFilterUsers = () => {
 
 ```javascript
 import { renderHook, act } from '@testing-library/react-hooks';
+import * as api from './api';
 import { useFilterUsers } from './useFilterUsers';
 
 describe('useFilterUsers specs', () => {
@@ -80,6 +80,7 @@ describe('useFilterUsers specs', () => {
 
 ```diff
 import { renderHook, act } from '@testing-library/react-hooks';
+import * as api from './api';
 import { useFilterUsers } from './useFilterUsers';
 
 describe('useFilterUsers specs', () => {
@@ -122,16 +123,15 @@ describe('useFilterUsers specs', () => {
 +     .mockResolvedValue(['John Doe', 'Jane Doe']);
 
 +   // Act
-+   const { result, waitForNextUpdate, rerender } = renderHook(() =>
++   const { result, waitForNextUpdate } = renderHook(() =>
 +     useFilterUsers(filter)
 +   );
 
 +   // Assert
 +   expect(result.current.users).toEqual([]);
 
++   renderHook(() => result.current.setFilter('doe'));
 +   await waitForNextUpdate();
-
-+   rerender('doe');
 
 +   expect(getUsersByFilterSpy).toHaveBeenCalledWith('doe');
 +   expect(getUsersByFilterSpy).toHaveBeenCalledTimes(1);
@@ -145,6 +145,30 @@ describe('useFilterUsers specs', () => {
 
 ```diff
 ...
++ it('should call getUsersByFilter two times when it calls filterUsers with different filters', async () => {
++   // Arrange
++   const filter = 'doe';
++   const getUsersByFilterSpy = jest
++     .spyOn(api, 'getUsersByFilter')
++     .mockResolvedValue(['John Doe', 'Jane Doe']);
+
++   // Act
++   const { result, waitForNextUpdate } = renderHook(() =>
++     useFilterUsers(filter)
++   );
+
++   // Assert
++   expect(result.current.users).toEqual([]);
+
++   renderHook(() => result.current.setFilter('smith'));
++   await waitForNextUpdate();
+
++   expect(getUsersByFilterSpy).toHaveBeenCalledWith('doe');
++   expect(getUsersByFilterSpy).toHaveBeenCalledWith('smith');
++   expect(getUsersByFilterSpy).toHaveBeenCalledTimes(2);
++   expect(result.current.users).toEqual(['John Doe', 'Jane Doe']);
++ });
+
 ```
 
 # About Basefactor + Lemoncode
