@@ -54,7 +54,7 @@ export const App: React.FunctionComponent = () => {
 +   getMembers().then(members => {
 +     console.log(members);
 +   });
-  });
++ }, []);
 
   return <h1>React testing by sample</h1>;
 };
@@ -192,7 +192,7 @@ import * as viewModel from './view-model';
 ```diff
 ...
 
-+ it('hould return array one mapped item when it feed array with one item', () => {
++ it('should return array one mapped item when it feed array with one item', () => {
 +   // Arrange
 +   const members: apiModel.Member[] = [
 +     { id: 1, login: 'test login', avatar_url: 'test avatar' },

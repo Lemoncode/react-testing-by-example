@@ -28,7 +28,7 @@ npm install
 - [ts-jest](https://github.com/kulshekhar/ts-jest): A preprocessor with sourcemap support to help use TypeScript with Jest.
 
 ```bash
-npm install jest @types/jest ts-jest -D
+npm install jest @types/jest ts-jest --save-dev
 ```
 
 # Config
