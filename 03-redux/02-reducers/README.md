@@ -44,6 +44,8 @@ describe('pages/members/list/reducers/members reducer tests', () => {
 
 Redux reducers have a minimum of three executions. The first one is when the store is initialized and every reducer creates all chunks of the initial state (if initialState is not fed in `createStore` at the time of creating the store). Redux will launch a `@@INIT` action to initialize all reducers. So let's use that text as the first one:
 
+### **./src/pages/members/list/reducers/members.spec.ts**
+
 ```diff
 + import { BaseAction } from '../../../../common/types';
 + import { MembersAction } from '../actions';
@@ -72,6 +74,8 @@ Redux reducers have a minimum of three executions. The first one is when the sto
 ```
 
 Next we'll test the behavior when it receives an action with type FETCH_MEMBERS_SUCCESS. It should update `members` and reset `serverError`:
+
+### **./src/pages/members/list/reducers/members.spec.ts**
 
 ```diff
 + import deepFreeze from 'deep-freeze';
@@ -111,6 +115,8 @@ Next we'll test the behavior when it receives an action with type FETCH_MEMBERS_
 
 Let's see how `deep-freeze` helps us to check immutability. Let's refactor `handleFetchMembersSuccess` case and mutate the state:
 
+### **./src/pages/members/list/reducers/members.spec.ts**
+
 ```diff
 - const handleFetchMembersSuccess = (_state: MembersState, members: Member[]): MembersState => ({
 -   members,
@@ -136,6 +142,8 @@ TypeError: Cannot add property 0, object is not extensible
 
 That's because `deep-freeze` makes all properties of our `state` object non writable. When we try to mutate a property an error is thrown. Let's change back the implementation to get all tests happy.
 
+### **./src/pages/members/list/reducers/members.spec.ts**
+
 ```diff
 - const handleFetchMembersSuccess = (state: MembersState, members: Member[]): MembersState => {
 -   for (const member of members) {
@@ -153,6 +161,8 @@ That's because `deep-freeze` makes all properties of our `state` object non writ
 ```
 
 Let's add the proper test when an action with type `FETCH_MEMBERS_ERROR`: it should add to the state the error message from payload:
+
+### **./src/pages/members/list/reducers/members.spec.ts**
 
 ```diff
   import deepFreeze from 'deep-freeze';
@@ -196,46 +206,48 @@ Let's add the proper test when an action with type `FETCH_MEMBERS_ERROR`: it sho
 
 Finally, le'll test how it behaves when an action with an arbitrary type is passed. It should return the state without modifications:
 
+### **./src/pages/members/list/reducers/members.spec.ts**
+
 ```diff
-import deepFreeze from 'deep-freeze';
-import { BaseAction } from '../../../../common/types';
-import { Member } from '../../../../rest-api/model';
-import { MembersAction } from '../actions';
-import { actionIds } from '../actions/actionIds';
-import { FetchMembersErrorAction, FetchMembersSuccessAction } from '../actions/fetchMembers';
-import { membersReducer, MembersState } from './members';
+  import deepFreeze from 'deep-freeze';
+  import { BaseAction } from '../../../../common/types';
+  import { Member } from '../../../../rest-api/model';
+  import { MembersAction } from '../actions';
+  import { actionIds } from '../actions/actionIds';
+  import { FetchMembersErrorAction, FetchMembersSuccessAction } from '../actions/fetchMembers';
+  import { membersReducer, MembersState } from './members';
 
-describe('pages/members/list/reducers/members reducer tests', () => {
-  it('should return the expected state when initialized with undefined initial state', () => {
-   ...
-  });
+  describe('pages/members/list/reducers/members reducer tests', () => {
+    it('should return the expected state when initialized with undefined initial state', () => {
+      ...
+    });
 
-  it('should return the expected state when action type is FETCH_MEMBERS_SUCCESS', () => {
-    ...
-  });
+    it('should return the expected state when action type is FETCH_MEMBERS_SUCCESS', () => {
+      ...
+    });
 
-  it('should return the expected state when action type is FETCH_MEMBERS_ERROR', () => {
-   ...
-  });
+    it('should return the expected state when action type is FETCH_MEMBERS_ERROR', () => {
+      ...
+    });
 +
-+ it('should return the current state if action type is not known', () => {
-+   // Arrange
-+   const action: BaseAction = {
-+     type: 'foo',
-+     payload: null,
-+   };
-+   const initialState: MembersState = deepFreeze({
-+     members: [],
-+     serverError: null,
++   it('should return the current state if action type is not known', () => {
++     // Arrange
++     const action: BaseAction = {
++       type: 'foo',
++       payload: null,
++     };
++     const initialState: MembersState = deepFreeze({
++       members: [],
++       serverError: null,
++     });
++
++     // Act
++     const result = membersReducer(initialState, action as MembersAction);
++
++     // Assert
++     expect(result).toBe(initialState);
 +   });
-+
-+   // Act
-+   const result = membersReducer(initialState, action as MembersAction);
-+
-+   // Assert
-+   expect(result).toBe(initialState);
-+ });
-});
+  });
 ```
 
 # About Basefactor + Lemoncode
