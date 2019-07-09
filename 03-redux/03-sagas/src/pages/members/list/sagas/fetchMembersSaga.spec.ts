@@ -7,7 +7,7 @@ import { actionIds } from '../actions/actionIds';
 import { fetchMembersError, FetchMembersRequestAction, fetchMembersSuccess } from '../actions/fetchMembers';
 import { fetchMembersSaga, watchFetchMembersRequest } from './fetchMembersSaga';
 
-describe('fetchMembers sagas', () => {
+describe('pages/members/sagas/fetchMembers sagas', () => {
   describe('watchFetchMembersRequest', () => {
     it('should wait for expected action and execute the expected worker', () => {
       // Arrange
