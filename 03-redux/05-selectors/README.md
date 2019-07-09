@@ -323,6 +323,48 @@ We could even test the selector computes the result once if we called it multipl
   });
 ```
 
+Finally let's test `getServerError` selector:
+
+```diff
+  import { State } from '../../reducers';
+  import * as mappers from './mappers';
+- import { getMembersList, getMembersListVM, getMembersState } from './selectors';
++ import { getMembersList, getMembersListVM, getMembersState, getServerError } from './selectors';
+  import { Member } from './viewModel';
+
+  describe('pages/members/list/selectors', () => {
+    describe('getMembersState', () => {
+      ...
+    });
+
+    describe('getMembersList', () => {
+      ...
+    });
+
+    describe('getMembersListVM', () => {
+      ...
+    });
++
++   describe('getServerError', () => {
++     it('should return the expected serverError from state', () => {
++       // Arrange
++       const state: State = {
++         members: {
++           members: [],
++           serverError: 'test error',
++         },
++       };
+
++       // Act
++       const result = getServerError(state);
+
++       // Assert
++       expect(result).toBe(state.members.serverError);
++     });
++   });
+  });
+```
+
 # About Basefactor + Lemoncode
 
 We are an innovating team of Javascript experts, passionate about turning your ideas into robust products.

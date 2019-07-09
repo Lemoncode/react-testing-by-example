@@ -1,6 +1,6 @@
 import { State } from '../../reducers';
 import * as mappers from './mappers';
-import { getMembersList, getMembersListVM, getMembersState } from './selectors';
+import { getMembersList, getMembersListVM, getMembersState, getServerError } from './selectors';
 import { Member } from './viewModel';
 
 describe('pages/members/list/selectors', () => {
@@ -96,6 +96,24 @@ describe('pages/members/list/selectors', () => {
       expect(result1 === result2).toBeTruthy();
       expect(result2 === result3).toBeTruthy();
       expect(mapMemberListModelToVM).toBeCalledTimes(1);
+    });
+  });
+
+  describe('getServerError', () => {
+    it('should return the expected serverError from state', () => {
+      // Arrange
+      const state: State = {
+        members: {
+          members: [],
+          serverError: 'test error',
+        },
+      };
+
+      // Act
+      const result = getServerError(state);
+
+      // Assert
+      expect(result).toBe(state.members.serverError);
     });
   });
 });
