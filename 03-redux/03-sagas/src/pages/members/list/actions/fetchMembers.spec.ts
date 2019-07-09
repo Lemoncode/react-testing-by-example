@@ -2,7 +2,7 @@ import { Member } from '../../../../rest-api/model';
 import { actionIds } from './actionIds';
 import { fetchMembersError, fetchMembersRequest, fetchMembersSuccess } from './fetchMembers';
 
-describe('members/list/actions/fetchMembers action creators', () => {
+describe('pages/members/list/actions/fetchMembers action creators', () => {
   describe('fetchMembersRequest', () => {
     it('should return an action with type FETCH_MEMBERS_REQUEST and payload null', () => {
       // Arrange

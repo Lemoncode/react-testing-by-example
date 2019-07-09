@@ -6,7 +6,7 @@ We will start from sample _00-boilerplate_.
 
 Summary steps:
 
-- Add `members/list/actions/fetchMembers` specs:
+- Add `pages/members/list/actions/fetchMembers` specs:
   - Add `fetchMembersRequest` tests
   - Add `fetchMembersSuccess` tests
   - Add `fetchMembersError` tests
@@ -19,7 +19,7 @@ Summary steps:
 npm install
 ```
 
-## Adding `members/list/actions/fetchMembers` specs
+## Adding `pages/members/list/actions/fetchMembers` specs
 
 Let's launch jest in watch mode to start the sample:
 
@@ -29,10 +29,10 @@ npm run test:watch
 
 We will start adding tests for `updateLoginEntityField`. Let's create the file `updateLoginEntityField.spec.ts`
 
-### **./src/login/actions/updateLoginEntityField.spec.ts**
+### **./src/pages/members/list/actions/fetchMembers.spec.ts**
 
 ```ts
-describe('members/list/actions/fetchMembers action creators', () => {
+describe('pages/members/list/actions/fetchMembers action creators', () => {
   describe('fetchMembersRequest', () => {
     it('', () => {
       // Arrange
@@ -45,11 +45,13 @@ describe('members/list/actions/fetchMembers action creators', () => {
 
 Action creators are just simple function that return plain action objects, so it is very easy to test. The only thing we should test is its return type.
 
+### **./src/pages/members/list/actions/fetchMembers.spec.ts**
+
 ```diff
 + import { actionIds } from './actionIds';
 + import { fetchMembersRequest } from './fetchMembers';
 
-  describe('members/list/actions/fetchMembers action creators', () => {
+  describe('pages/members/list/actions/fetchMembers action creators', () => {
     describe('fetchMembersRequest', () => {
 -     it('', () => {
 +     it('should return an action with type FETCH_MEMBERS_REQUEST and payload null', () => {
@@ -68,13 +70,15 @@ Action creators are just simple function that return plain action objects, so it
 
 Next we'll add tests for `fetchMembersSuccess` action creator:
 
+### **./src/pages/members/list/actions/fetchMembers.spec.ts**
+
 ```diff
 + import { Member } from '../../../../rest-api/model';
   import { actionIds } from './actionIds';
 - import { fetchMembersRequest } from './fetchMembers';
 + import { fetchMembersRequest, fetchMembersSuccess } from './fetchMembers';
 
-  describe('members/list/actions/fetchMembers action creators', () => {
+  describe('pages/members/list/actions/fetchMembers action creators', () => {
     describe('fetchMembersRequest', () => {
       ...
     });
@@ -101,7 +105,7 @@ Next we'll add tests for `fetchMembersSuccess` action creator:
 
 Finally, the tests for `fetchMembersError` action creator:
 
-### **./src/login/actions/fetchMembersRequest.spec.ts**
+### **./src/pages/members/list/actions/fetchMembers.spec.ts**
 
 ```diff
   import { Member } from '../../../../rest-api/model';
@@ -109,7 +113,7 @@ Finally, the tests for `fetchMembersError` action creator:
 - import { fetchMembersRequest, fetchMembersSuccess } from './fetchMembers';
 + import { fetchMembersRequest, fetchMembersSuccess, fetchMembersError } from './fetchMembers';
 
-  describe('members/list/actions/fetchMembers action creators', () => {
+  describe('pages/members/list/actions/fetchMembers action creators', () => {
     describe('fetchMembersRequest', () => {
       ...
     });
