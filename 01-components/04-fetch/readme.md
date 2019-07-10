@@ -38,17 +38,20 @@ export const NameCollection: React.FunctionComponent = () => {
   const [nameCollection, setNameCollection] = React.useState([]);
 
   React.useEffect(() => {
-    getNameCollection().then(names => setNameCollection(names));
+    getNameCollection().then(names => {
+      setNameCollection(names);
+    });
   }, []);
 
   return (
     <ul>
-      {nameCollection.map((name, index) => (
-        <li key={index}>{name}</li>
+      {nameCollection.map(name => (
+        <li key="name">{name}</li>
       ))}
     </ul>
   );
 };
+
 
 ```
 
