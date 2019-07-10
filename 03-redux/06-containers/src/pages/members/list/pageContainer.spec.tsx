@@ -60,6 +60,30 @@ describe('src/pages/members/list/pageContainer specs', () => {
     expect(memberElements).toHaveLength(1);
   });
 
+  it('should display zero items when it has two items on state and serverError equals "has-error"', () => {
+    // Arrange
+    const initialState: State = {
+      members: {
+        members: [
+          { id: 1, login: 'test login 1', avatar_url: 'test avatar_url 1' },
+          { id: 2, login: 'test login 2', avatar_url: 'test avatar_url 2' },
+        ],
+        serverError: 'has-error',
+      },
+    };
+
+    // Act
+    const { queryAllByTestId } = renderWithRedux(<MemberListPageContainer />, {
+      initialState,
+      reducer: membersReducer,
+    });
+
+    const memberElements = queryAllByTestId('member');
+
+    // Assert
+    expect(memberElements).toHaveLength(0);
+  });
+
   it('should call fetchMembersRequest when it mounts the component', () => {
     // Arrange
     const initialState: State = {
