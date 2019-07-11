@@ -6,7 +6,7 @@ interface Props {
 }
 
 export const Row: React.FunctionComponent<Props> = ({ member }) => (
-  <tr>
+  <tr data-testid="member">
     <td>
       <img src={member.avatarUrl} style={{ maxWidth: '10rem' }} />
     </td>
