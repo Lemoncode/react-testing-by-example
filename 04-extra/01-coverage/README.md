@@ -7,7 +7,7 @@ Summary steps:
 - Add a new command inside package.json's scripts sections.
 - Create more sophisticated configuration.
 
-# Steps to build it
+## Steps to build it
 
 - `npm install` to install previous sample packages:
 
@@ -17,19 +17,18 @@ npm install
 
 To get an up and working code coverage a simple script can be added to package.json to tell jest we need collect coverage report from our tests. That is, applying the `--coverage` flag:
 
-#### `package.json`
+### **./package.json**
 
 ```diff
   "scripts": {
-    "start": "env-cmd .env if-env NODE_ENV=production && npm run start:prod || npm run start:dev",
-    "start:dev": "env-cmd .env cross-env NODE_ENV=development webpack-dev-server --config ./config/webpack/app/dev.js",
-    "start:prod": "env-cmd .env cross-env NODE_ENV=production webpack-dev-server --config ./config/webpack/app/prod.js",
-    "build": "env-cmd .env if-env NODE_ENV=production && npm run build:prod || npm run build:dev",
-    "build:dev": "rimraf dist && env-cmd .env cross-env NODE_ENV=development webpack --config ./config/webpack/app/dev.js",
-    "build:prod": "rimraf dist && env-cmd .env cross-env NODE_ENV=production webpack -p --config ./config/webpack/app/prod.js",
+    "start": "webpack-dev-server --config ./config/webpack/dev.js",
+    "prebuild": "rimraf dist",
+    "build": "webpack --config ./config/webpack/prod.js",
     "test": "jest -c ./config/test/jest.json --verbose",
-+   "test:coverage": "rimraf coverage && jest -c ./config/test/jest.json --verbose --coverage",
-    "test:watch": "jest -c ./config/test/jest.json --verbose --watchAll -i",
+-   "test:watch": "jest -c ./config/test/jest.json --verbose --watchAll -i"
++   "test:watch": "jest -c ./config/test/jest.json --verbose --watchAll -i",
++   "pretest:coverage": "rimraf coverage",
++   "test:coverage": "jest -c ./config/test/jest.json --verbose --coverage"
   },
 ```
 
@@ -52,7 +51,7 @@ Described columns are:
 - **Branch coverage** - How many posible paths has been called
 - **Line coverage** How many executable lines has been called
 
-Second thing you'll note is that a `coverage` folder is added with some extra files. By default jest uses three coverage tools ["text", "lcov", "json"], to report coverage results. The first one is the formatted table you saw on the console, `json` coverage result is located at `coverage/coverage-final.json` and `lcov` reports are inside `coverage/lcov-report` folder as a nice HTML document. Some extra info is added to the code:
+Second thing you'll note is that a `coverage` folder is added with some extra files. By default jest uses four coverage tools `["json", "lcov", "text", "clover"]`, to report coverage results. The first one is the formatted table you saw on the console, `json` coverage result is located at `coverage/coverage-final.json` and `lcov` reports are inside `coverage/lcov-report` folder as a nice HTML document. Some extra info is added to the code:
 
 - `'E'` stands for 'else path not taken', which means that for the marked if/else statement, the 'if' path has been tested but not the 'else'.
 - `'I'` stands for 'if path not taken', which is the opposite case: the 'if' hasn't been tested.
@@ -85,9 +84,10 @@ Let's update coverage command inside `package.json` to point this new config and
 
 ```diff
   "test": "jest -c ./config/test/jest.json --verbose",
-- "test:coverage": "rimraf coverage && jest -c ./config/test/jest.json --verbose --coverage",
+  "test:watch": "jest -c ./config/test/jest.json --verbose --watchAll -i",
+  "pretest:coverage": "rimraf coverage",
+- "test:coverage": "jest -c ./config/test/jest.json --verbose --coverage"
 + "test:coverage": "rimraf coverage && jest -c ./config/test/jest.coverage.json --verbose",
-  "test:watch": "jest -c ./config/test/jest.json --verbose --watchAll -i"
 ```
 
 Let's play with some different reporting options. Add `coverageReporters` section as an array of strings in `jest.coverage.json`:
@@ -131,23 +131,6 @@ Let's keep `"html"` and `"text"` as our main reporters. The former will be usefu
 +   "text",
 +   "html"
   ]
-```
-
-We'll notice that in our tests `polyfills.js` and `setupTest.js` are coverage-reported too. Let's exclude that folder. For that we'll use `coveragePathIgnorePatterns` option:
-
-#### `config/test/jest.coverage.json`
-
-```diff
-  "collectCoverage": true,
-  "coverageReporters": [
-    "text",
-    "html"
-- ]
-+ ],
-+ "coveragePathIgnorePatterns": [
-+   "/node_modules/",
-+   "config/test"
-+ ]
 ```
 
 We can configure a minimum threshold enforcement for coverage results. If thresholds aren't met, jest will fail.
