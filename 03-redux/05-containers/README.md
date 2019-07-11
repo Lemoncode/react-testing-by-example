@@ -1,9 +1,8 @@
-# 06 Containers
+# 05 Containers
 
 In this sample we are going to test Redux containers.
 
-We will start from sample _05-selectors_.
-
+We will start from sample _04-selectors_.
 
 # Steps to build it
 
@@ -25,13 +24,10 @@ import { MemberListPageContainer } from './pageContainer';
 describe('src/pages/members/list/pageContainer specs', () => {
   it('', () => {
     // Arrange
-
     // Act
-
     // Assert
   });
 });
-
 ```
 
 - Let's add some `testid` to member item:

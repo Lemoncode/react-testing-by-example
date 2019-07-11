@@ -1,8 +1,8 @@
-# 05 Selectors
+# 04 Selectors
 
 In this sample we are going to test Redux sagas.
 
-We will start from sample _05-containers_.
+We will start from sample _03-sagas_.
 
 Summary steps:
 
