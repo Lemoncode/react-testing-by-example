@@ -1,0 +1,6 @@
+{
+  "rootDir": "../../",
+  "preset": "ts-jest",
+  "restoreMocks": true,
+  "setupFilesAfterEnv": ["@testing-library/react/cleanup-after-each"]
+}
