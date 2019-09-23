@@ -11,10 +11,13 @@ const baseRoutes: BaseRoutes = {
   edit: '/:id',
 };
 
-interface SwitchRoutes extends BaseRoutes {}
+interface SwitchRoutes extends BaseRoutes {
+  edit: string;
+}
 
 export const switchRoutes: SwitchRoutes = {
   ...baseRoutes,
+  edit: baseRoutes.edit as string,
 };
 
 interface LinkRoutes extends BaseRoutes {
@@ -23,5 +26,5 @@ interface LinkRoutes extends BaseRoutes {
 
 export const linkRoutes: LinkRoutes = {
   ...baseRoutes,
-  edit: id => generatePath(baseRoutes.edit, { id }),
+  edit: id => generatePath(switchRoutes.edit, { id }),
 };

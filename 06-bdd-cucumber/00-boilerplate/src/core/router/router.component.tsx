@@ -5,7 +5,7 @@ import { ConnectedRouter } from 'connected-react-router';
 import { history } from './history';
 import { switchRoutes } from './routes';
 // TODO: Import scenes to render in Route component
-import {} from 'scenes';
+// import {} from 'scenes';
 
 export const RouterComponent = () => (
   <ConnectedRouter history={history}>
