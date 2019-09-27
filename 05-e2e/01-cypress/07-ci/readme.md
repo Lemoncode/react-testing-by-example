@@ -21,7 +21,7 @@ npm install
 "scripts": {
     "test:e2e": "npm-run-all -p -l start start:e2e",
     "start:e2e": "cypress open",
-+   "test:e2e:ci": "npm-run-all -p -l start:dev run:e2e",
++   "test:e2e:ci": "npm-run-all -p -l- r start:dev run:e2e",
 +   "run:e2e": "cypress run"
   },
 ...
@@ -72,11 +72,31 @@ npm run test:e2e:ci
 
 ```
 
-- About `login` spec, we are running `start:dev` and `run:e2e` processes in parallel, but the run process has to wait until the web server is up and running. So, we need to install [wait-on](https://github.com/jeffbski/wait-on):
+- Add circe ci config file:
 
-```bash
-npm install wait-on --save-dev
+### ./.circleci/config.yml
+
+```yml
+version: 2
+jobs:
+  build:
+    working_directory: ~/test-ci-code
+    docker:
+      - image: circleci/node:10
+    steps:
+      - checkout
+      - run:
+          name: install cypress dependencies
+          command: 'sudo apt-get install xvfb libgtk-3-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2'
+      - run:
+          name: install
+          command: 'npm install'
+      - run:
+          name: test:e2e
+          command: 'npm run test:e2e:ci'
 ```
+
+> We need to install cypress dependencies. More info [here](https://docs.cypress.io/guides/guides/continuous-integration.html#Advanced-setup)
 
 # About Basefactor + Lemoncode
 

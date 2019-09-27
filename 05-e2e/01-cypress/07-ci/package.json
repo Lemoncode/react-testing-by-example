@@ -14,7 +14,7 @@
     "postinstall": "cd ./server && npm install",
     "test:e2e": "npm-run-all -p -l start:dev start:e2e",
     "start:e2e": "cypress open",
-    "test:e2e:ci": "npm-run-all -p -l start:dev run:e2e",
+    "test:e2e:ci": "npm-run-all -p -l -r start:dev run:e2e",
     "run:e2e": "cypress run"
   },
   "license": "MIT",
