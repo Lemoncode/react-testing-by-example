@@ -302,6 +302,7 @@ describe('Login specs', () => {
 +   cy.get('@userInput').should('have.value', user);
 +   cy.get('@passwordInput').should('have.value', password);
 +   cy.get('[data-testid=loginText]').should('have.text', user);
++   cy.url().should('eq', 'http://localhost:8080/#/hotels');
 + });
 ```
 

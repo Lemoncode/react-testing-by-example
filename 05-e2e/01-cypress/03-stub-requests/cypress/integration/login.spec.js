@@ -10,7 +10,7 @@ describe('Login specs', () => {
     cy.on('window:alert', spy);
 
     // Act
-    cy.get('@userInput').type(user);
+    cy.get('@userInput').type(user).debug();
     cy.get('@passwordInput').type(password);
     cy.get('[data-testid=loginButton]').click();
 
@@ -39,6 +39,6 @@ describe('Login specs', () => {
     // Assert
     cy.get('@userInput').should('have.value', user);
     cy.get('@passwordInput').should('have.value', password);
-    cy.get('[data-testid=loginText]').should('have.text', user);
+    cy.url().should('eq', 'http://localhost:8080/#/hotels');
   });
 });
