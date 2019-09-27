@@ -3,14 +3,16 @@ describe('Login specs', () => {
     // Arrange
     const user = 'admin';
     const password = '1234';
-    cy.get('[data-testid=userInput]').as('userInput');
-    cy.get('[data-testid=passwordInput]').as('passwordInput');
     const spy = cy.spy().as('alertSpy');
     cy.on('window:alert', spy);
 
     // Act
     cy.visit('/');
-    cy.get('@userInput').type(user).debug();
+    cy.get('[data-testid=userInput]').as('userInput');
+    cy.get('[data-testid=passwordInput]').as('passwordInput');
+    cy.get('@userInput')
+      .type(user)
+      .debug();
     cy.get('@passwordInput').type(password);
     cy.get('[data-testid=loginButton]').click();
 
@@ -27,11 +29,11 @@ describe('Login specs', () => {
     // Arrange
     const user = 'admin';
     const password = 'test';
-    cy.get('[data-testid=userInput]').as('userInput');
-    cy.get('[data-testid=passwordInput]').as('passwordInput');
 
     // Act
     cy.visit('/');
+    cy.get('[data-testid=userInput]').as('userInput');
+    cy.get('[data-testid=passwordInput]').as('passwordInput');
     cy.get('@userInput').type(user);
     cy.get('@passwordInput').type(password);
     cy.get('[data-testid=loginButton]').click();

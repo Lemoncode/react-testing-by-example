@@ -9,3 +9,5 @@ junit.xml
 package-lock.json
 yarn.lock
 .awcache
+cypress/screenshots
+cypress/videos
