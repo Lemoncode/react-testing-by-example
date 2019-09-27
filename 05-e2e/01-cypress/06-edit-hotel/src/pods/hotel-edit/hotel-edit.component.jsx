@@ -22,6 +22,7 @@ export const HotelEditComponent = props => {
         value={hotel.name}
         onChange={onFieldUpdate}
         error={hotelErrors.name.message}
+        data-testid="nameInput"
       />
 
       <TextFieldComponent
@@ -30,6 +31,7 @@ export const HotelEditComponent = props => {
         value={hotel.address}
         onChange={onFieldUpdate}
         error={hotelErrors.address.message}
+        data-testid="addressInput"
       />
 
       <img className={classes.picture} src={hotel.picture} />
@@ -40,6 +42,7 @@ export const HotelEditComponent = props => {
         max={5}
         onChange={onFieldUpdate}
         error={hotelErrors.rating.message}
+        data-testid="ratingContainer"
       />
 
       <DropdownComponent
@@ -49,6 +52,7 @@ export const HotelEditComponent = props => {
         value={hotel.city}
         list={cities}
         error={hotelErrors.city.message}
+        data-testid="citySelect"
       />
 
       <TextareaComponent
@@ -57,9 +61,15 @@ export const HotelEditComponent = props => {
         value={hotel.description}
         onChange={onFieldUpdate}
         error={hotelErrors.description.message}
+        data-testid="descriptionInput"
       />
 
-      <Button type="submit" variant="contained" color="primary">
+      <Button
+        type="submit"
+        variant="contained"
+        color="primary"
+        data-testid="saveButton"
+      >
         Save
       </Button>
     </FormComponent>

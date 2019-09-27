@@ -59,13 +59,14 @@ describe('Hotel collection specs', () => {
 ...
 ```
 
-- Even, we could pass parameters if we want to be more generics:
+- Even, we could pass parameters if we want to be more generics and apply SRP:
 
 ### ./cypress/support/commands.js
 
 ```diff
-Cypress.Commands.add('loadAndVisit', () => {
-+ const { apiPath, fixture, routePath } = params;
+- Cypress.Commands.add('loadAndVisit', () => {
++ Cypress.Commands.add('loadData', () => {
++ const { apiPath, fixture, fetchAlias } = params;
   cy.server();
 - cy.route('GET', 'http://localhost:3000/api/hotels', 'fixture:hotels').as(
 -   'fetchHotels'
@@ -73,12 +74,10 @@ Cypress.Commands.add('loadAndVisit', () => {
 + fixture
 +   ? cy
 +       .route('GET', `http://localhost:3000/api${apiPath}`, fixture)
-+       .as('fetch')
-+   : cy.route('GET', `http://localhost:3000/api${apiPath}`).as('fetch');
++       .as(fetchAlias)
++   : cy.route('GET', `http://localhost:3000/api${apiPath}`).as(fetchAlias);
 - cy.visit('#/hotels');
-+ cy.visit(routePath);
 - cy.wait('@fetchHotels');
-+ cy.wait('@fetch');
 });
 
 ```
@@ -94,14 +93,16 @@ Cypress.Commands.add('loadAndVisit', () => {
 +   const params = {
 +     apiPath: '/hotels',
 +     fixture: 'fixture:hotels',
-+     routePath: '#/hotels',
++     fetchAlias: 'fetchHotels',
 +   };
 
     // Act
 -   cy.loadAndVisit();
-+   cy.loadAndVisit(params);
++   cy.loadData(params);
++   cy.visit('#/hotels');
 
     // Assert
++   cy.wait('@fetchHotels');
     cy.get('[data-testid="hotelCollectionContainer"]')
       .children()
       .should('have.length', 2);
@@ -113,15 +114,16 @@ Cypress.Commands.add('loadAndVisit', () => {
 -   cy.route('GET', 'http://localhost:3000/api/hotels').as('fetchHotels');
 +   const params = {
 +     apiPath: '/hotels',
-+     routePath: '#/hotels',
++     fetchAlias: 'fetchHotels',
 +   };
 
     // Act
 -   cy.visit('#/hotels');
-+   cy.loadAndVisit(params);
++   cy.loadData(params);
++   cy.visit('#/hotels');
 
     // Assert
--   cy.wait('@fetchHotels');
+    cy.wait('@fetchHotels');
     cy.get('[data-testid="hotelCollectionContainer"]')
       .children()
       .should('have.length', 10);

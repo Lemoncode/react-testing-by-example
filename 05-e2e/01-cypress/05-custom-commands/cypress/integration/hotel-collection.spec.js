@@ -4,13 +4,15 @@ describe('Hotel collection specs', () => {
     const params = {
       apiPath: '/hotels',
       fixture: 'fixture:hotels',
-      routePath: '#/hotels',
+      fetchAlias: 'fetchHotels',
     };
 
     // Act
-    cy.loadAndVisit(params);
+    cy.loadData(params);
+    cy.visit('#/hotels');
 
     // Assert
+    cy.wait('@fetchHotels');
     cy.get('[data-testid="hotelCollectionContainer"]')
       .children()
       .should('have.length', 2);
@@ -20,13 +22,15 @@ describe('Hotel collection specs', () => {
     // Arrange
     const params = {
       apiPath: '/hotels',
-      routePath: '#/hotels',
+      fetchAlias: 'fetchHotels',
     };
 
     // Act
-    cy.loadAndVisit(params);
+    cy.loadData(params);
+    cy.visit('#/hotels');
 
     // Assert
+    cy.wait('@fetchHotels');
     cy.get('[data-testid="hotelCollectionContainer"]')
       .children()
       .should('have.length', 10);

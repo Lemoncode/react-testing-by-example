@@ -1,11 +1,9 @@
-Cypress.Commands.add('loadAndVisit', params => {
-  const { apiPath, fixture, routePath } = params;
+Cypress.Commands.add('loadData', params => {
+  const { apiPath, fixture, fetchAlias } = params;
   cy.server();
   fixture
     ? cy
         .route('GET', `http://localhost:3000/api${apiPath}`, fixture)
-        .as('fetch')
-    : cy.route('GET', `http://localhost:3000/api${apiPath}`).as('fetch');
-  cy.visit(routePath);
-  cy.wait('@fetch');
+        .as(fetchAlias)
+    : cy.route('GET', `http://localhost:3000/api${apiPath}`).as(fetchAlias);
 });

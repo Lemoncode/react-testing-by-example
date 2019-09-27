@@ -25,6 +25,9 @@ export const HotelCardComponent = props => {
           </IconButton>
         }
         title={hotel.name}
+        titleTypographyProps={{
+          'data-testid': `hotelName-with-hotelId=${hotel.id}`,
+        }}
         subheader={hotel.address}
       />
       <CardContent>
@@ -43,6 +46,7 @@ export const HotelCardComponent = props => {
         <IconButton
           aria-label="Add to favorites"
           onClick={() => onEditHotel(hotel.id)}
+          data-testid={`editHotelButton-with-hotelId=${hotel.id}`}
         >
           <EditIcon />
         </IconButton>
