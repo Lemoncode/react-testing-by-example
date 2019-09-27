@@ -7,7 +7,7 @@ export const HotelCollectionComponent = props => {
   const classes = useStyles();
 
   return (
-    <div className={classes.container}>
+    <div className={classes.container} data-testid="hotelCollectionContainer">
       {hotelCollection.map(hotel => (
         <HotelCardComponent
           key={hotel.id}

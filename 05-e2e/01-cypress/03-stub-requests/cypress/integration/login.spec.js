@@ -1,7 +1,6 @@
 describe('Login specs', () => {
   it('should show an alert with a message when type invalid credentials', () => {
     // Arrange
-    cy.visit('/');
     const user = 'admin';
     const password = '1234';
     cy.get('[data-testid=userInput]').as('userInput');
@@ -10,6 +9,7 @@ describe('Login specs', () => {
     cy.on('window:alert', spy);
 
     // Act
+    cy.visit('/');
     cy.get('@userInput').type(user).debug();
     cy.get('@passwordInput').type(password);
     cy.get('[data-testid=loginButton]').click();
@@ -25,13 +25,13 @@ describe('Login specs', () => {
 
   it('should update header user name and navigate to hotels url when type valid credentials', () => {
     // Arrange
-    cy.visit('/');
     const user = 'admin';
     const password = 'test';
     cy.get('[data-testid=userInput]').as('userInput');
     cy.get('[data-testid=passwordInput]').as('passwordInput');
 
     // Act
+    cy.visit('/');
     cy.get('@userInput').type(user);
     cy.get('@passwordInput').type(password);
     cy.get('[data-testid=loginButton]').click();
