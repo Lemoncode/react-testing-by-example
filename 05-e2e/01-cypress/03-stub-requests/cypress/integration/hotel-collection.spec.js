@@ -1,10 +1,10 @@
 describe('Hotel collection specs', () => {
-  it('should fetch 3 hotels and show it in screen when visit /hotels urls', () => {
+  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
     // Arrange
-
-    // Act
     cy.server();
     cy.route('GET', 'http://localhost:3000/api/hotels', 'fixture:hotels');
+
+    // Act
     cy.visit('#/hotels');
 
     // Assert

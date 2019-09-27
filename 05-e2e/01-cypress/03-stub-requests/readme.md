@@ -18,7 +18,7 @@ npm install
 
 ```javascript
 describe('Hotel collection specs', () => {
-  it('should fetch 3 hotels and show it in screen when visit /hotels urls', () => {
+  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
     // Arrange
     // Act
     // Assert
@@ -47,7 +47,7 @@ describe('Hotel collection specs', () => {
 
 ```diff
 describe('Hotel collection specs', () => {
-  it('should fetch 3 hotels and show it in screen when visit /hotels urls', () => {
+  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
     // Arrange
 
     // Act
@@ -67,7 +67,7 @@ describe('Hotel collection specs', () => {
 
 ```diff
 describe('Hotel collection specs', () => {
-  it('should fetch 3 hotels and show it in screen when visit /hotels urls', () => {
+  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
     // Arrange
 +   const hotels = [
 +     {
@@ -89,10 +89,10 @@ describe('Hotel collection specs', () => {
 +       city: 'test-city-2',
 +     },
 +   ];
-
-    // Act
 +   cy.server();
 +   cy.route('GET', 'http://localhost:3000/api/hotels', hotels);
+
+    // Act
     cy.visit('#/hotels');
 
     // Assert
@@ -117,7 +117,7 @@ describe('Hotel collection specs', () => {
     "name": "test-name-1'",
     "shortDescription": "test-description-1",
     "address1": "test-address-1",
-    "hotelRating":"1",
+    "hotelRating": "1",
     "city": "test-city-1"
   },
   {
@@ -126,11 +126,10 @@ describe('Hotel collection specs', () => {
     "name": "test-name-2'",
     "shortDescription": "test-description-2",
     "address1": "test-address-2",
-    "hotelRating":"2",
+    "hotelRating": "2",
     "city": "test-city-2"
   }
 ]
-
 ```
 
 - Update spec:
@@ -139,7 +138,7 @@ describe('Hotel collection specs', () => {
 
 ```diff
 describe('Hotel collection specs', () => {
-  it('should fetch 3 hotels and show it in screen when visit /hotels urls', () => {
+  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
     // Arrange
 -   const hotels = [
 -     {
@@ -161,13 +160,13 @@ describe('Hotel collection specs', () => {
 -       city: 'test-city-2',
 -     },
 -   ];
-
-    // Act
     cy.server();
 -   cy.route('GET', 'http://localhost:3000/api/hotels', hotels);
 +   cy.fixture('hotels').then(hotels => {
 +     cy.route('GET', 'http://localhost:3000/api/hotels', hotels);
 +   });
+
+    // Act
     cy.visit('#/hotels');
 
     // Assert
@@ -185,15 +184,15 @@ describe('Hotel collection specs', () => {
 
 ```diff
 describe('Hotel collection specs', () => {
-  it('should fetch 3 hotels and show it in screen when visit /hotels urls', () => {
+  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
     // Arrange
-
-    // Act
     cy.server();
 -   cy.fixture('hotels').then(hotels => {
 -     cy.route('GET', 'http://localhost:3000/api/hotels', hotels);
 -   });
 +   cy.route('GET', 'http://localhost:3000/api/hotels', 'fixture:hotels');
+
+    // Act
     cy.visit('#/hotels');
 
     // Assert
