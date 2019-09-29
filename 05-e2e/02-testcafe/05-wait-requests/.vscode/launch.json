@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "protocol": "inspector",
+      "name": "Debug e2e spec",
+      "program": "${workspaceRoot}/node_modules/testcafe/bin/testcafe.js",
+      "args": ["chrome", "${relativeFile}"],
+      "console": "integratedTerminal"
+    }
+  ]
+}

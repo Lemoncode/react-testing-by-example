@@ -1,4 +1,4 @@
-# 03 Stub requests
+# 04 Stub requests
 
 In this example we are going to stub hotel request.
 
