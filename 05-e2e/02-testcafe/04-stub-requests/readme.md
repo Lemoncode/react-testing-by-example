@@ -70,13 +70,12 @@ test('should fetch 2 hotels and show it in screen when visit /hotels urls', asyn
 ### ./tests/hotel-collection.spec.js
 
 ```diff
-import { Selector } from 'testcafe';
+- import { Selector } from 'testcafe';
++ import { Selector, RequestMock } from 'testcafe';
 import { config } from '../testcafe.config';
 
 fixture('Hotel collection specs').page(`${config.baseUrl}#/hotels`);
 
-test('should fetch 2 hotels and show it in screen when visit /hotels urls', async t => {
-  // Arrange
 +   const hotels = [
 +     {
 +       id: 'id-1',
@@ -98,60 +97,93 @@ test('should fetch 2 hotels and show it in screen when visit /hotels urls', asyn
 +     },
 +   ];
 
++ const mock = RequestMock()
++   .onRequestTo('http://localhost:3000/api/hotels')
++   .respond(hotels, 200, {
++     'access-control-allow-origin': '*',
++     'access-control-allow-credentials': true,
++   });
+
+- test('should fetch 2 hotels and show it in screen when visit /hotels urls', async t => {
++ test.requestHooks(mock)(
++   'should fetch 2 hotels and show it in screen when visit /hotels urls',
+  // Arrange
+
   // Act
 
   // Assert
   await t.expect(
     Selector('[data-testid=hotelCollectionContainer]').childElementCount
-  ).eql(0);
-});
-
-describe('Hotel collection specs', () => {
-  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
-    // Arrange
-+   cy.server();
-+   cy.route('GET', 'http://localhost:3000/api/hotels', hotels);
-
-    // Act
-    cy.visit('#/hotels');
-
-    // Assert
-    cy.get('[data-testid="hotelCollectionContainer"]')
-      .children()
--     .should('have.length', 0);
-+     .should('have.length', 2);
-  });
+- ).eql(0);
++ ).eql(2);
 });
 
 ```
 
 > More info [here](https://devexpress.github.io/testcafe/documentation/test-api/intercepting-http-requests/)
 
-- This is a common task that we will have to do, so cypress provide the `fixtures` approach:
+- This is a common task that we will have to do, so we could move it to:
 
-### ./cypress/fixtures/hotels.json
+### ./tests/mocks/hotels.js
 
-```json
-[
+```javascript
+export const mockHotels = [
   {
-    "id": "id-1",
-    "thumbNailUrl": "test-picture-1",
-    "name": "test-name-1",
-    "shortDescription": "test-description-1",
-    "address1": "test-address-1",
-    "hotelRating": 1,
-    "city": "test-city-1"
+    id: 'id-1',
+    thumbNailUrl: 'test-picture-1',
+    name: 'test-name-1',
+    shortDescription: 'test-description-1',
+    address1: 'test-address-1',
+    hotelRating: 1,
+    city: 'test-city-1',
   },
   {
-    "id": "id-2",
-    "thumbNailUrl": "test-picture-2",
-    "name": "test-name-2",
-    "shortDescription": "test-description-2",
-    "address1": "test-address-2",
-    "hotelRating": 2,
-    "city": "test-city-2"
-  }
-]
+    id: 'id-2',
+    thumbNailUrl: 'test-picture-2',
+    name: 'test-name-2',
+    shortDescription: 'test-description-2',
+    address1: 'test-address-2',
+    hotelRating: 2,
+    city: 'test-city-2',
+  },
+];
+```
+
+- And the request:
+
+### ./tests/mocks/requests.js
+
+```javascript
+import { RequestMock } from 'testcafe';
+
+export const getMockRequest = (url, data, statusCode) =>
+  RequestMock()
+    .onRequestTo(url)
+    .respond(data, statusCode, {
+      'access-control-allow-origin': '*',
+      'access-control-allow-credentials': true,
+    });
+```
+
+- Add `barrel` file:
+
+```javascript
+export * from './hotels';
+export * from './requests';
+```
+
+### ./tests/mocks/requests.js
+
+```javascript
+import { RequestMock } from 'testcafe';
+
+export const getMockRequest = (url, data, statusCode) =>
+  RequestMock()
+    .onRequestTo(url)
+    .respond(data, statusCode, {
+      'access-control-allow-origin': '*',
+      'access-control-allow-credentials': true,
+    });
 ```
 
 - Update spec:
@@ -159,9 +191,13 @@ describe('Hotel collection specs', () => {
 ### ./tests/hotel-collection.spec.js
 
 ```diff
-describe('Hotel collection specs', () => {
-  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
-    // Arrange
+- import { Selector, RequestMock } from 'testcafe';
++ import { Selector } from 'testcafe';
+import { config } from '../testcafe.config';
++ import { getMockRequest, mockHotels } from './mocks';
+
+fixture('Hotel collection specs').page(`${config.baseUrl}#/hotels`);
+
 -   const hotels = [
 -     {
 -       id: 'id-1',
@@ -182,48 +218,20 @@ describe('Hotel collection specs', () => {
 -       city: 'test-city-2',
 -     },
 -   ];
-    cy.server();
--   cy.route('GET', 'http://localhost:3000/api/hotels', hotels);
-+   cy.fixture('hotels').then(hotels => {
-+     cy.route('GET', 'http://localhost:3000/api/hotels', hotels);
-+   });
 
-    // Act
-    cy.visit('#/hotels');
-
-    // Assert
-    cy.get('[data-testid="hotelCollectionContainer"]')
-      .children()
-      .should('have.length', 2);
-  });
-});
-
-```
-
-- Or a shorted way:
-
-### ./tests/hotel-collection.spec.js
-
-```diff
-describe('Hotel collection specs', () => {
-  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
-    // Arrange
-    cy.server();
--   cy.fixture('hotels').then(hotels => {
--     cy.route('GET', 'http://localhost:3000/api/hotels', hotels);
+- const mock = RequestMock()
+-   .onRequestTo('http://localhost:3000/api/hotels')
+-   .respond(hotels, 200, {
+-     'access-control-allow-origin': '*',
+-     'access-control-allow-credentials': true,
 -   });
-+   cy.route('GET', 'http://localhost:3000/api/hotels', 'fixture:hotels');
 
-    // Act
-    cy.visit('#/hotels');
-
-    // Assert
-    cy.get('[data-testid="hotelCollectionContainer"]')
-      .children()
-      .should('have.length', 2);
-  });
-});
-
+- test.requestHooks(mock
++ test.requestHooks(
++   getMockRequest('http://localhost:3000/api/hotels', mockHotels, 200)
+)(
+  'should fetch 2 hotels and show it in screen when visit /hotels urls',
+  ...
 ```
 
 # About Basefactor + Lemoncode
