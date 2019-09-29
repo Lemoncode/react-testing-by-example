@@ -12,122 +12,86 @@ We will start from `05-wait-requests`.
 npm install
 ```
 
-- If we look into our code, we will notice that there some steps that we're going to want to repeat over the tests:
+- Sometimes, we need to reuse some functionality. For example, we will try to reuse `fill login form` functionality:
 
-### ./cypress/support/commands.js
+### ./tests/commands/commands.js
 
 ```javascript
-Cypress.Commands.add('loadAndVisit', () => {
-  cy.server();
-  cy.route('GET', 'http://localhost:3000/api/hotels', 'fixture:hotels').as(
-    'fetchHotels'
-  );
-  cy.visit('#/hotels');
-  cy.wait('@fetchHotels');
-});
+import { Selector } from 'testcafe';
+
+export const fillLoginForm = async (t, user, password) => {
+  await t.typeText(Selector('[data-testid=userInput]'), user);
+  await t.typeText(Selector('[data-testid=passwordInput]'), password);
+  await t.click(Selector('[data-testid=loginButton]'));
+};
 ```
 
-### ./cypress/support/index.js
+- Add `barrel` file:
+
+### ./tests/commands/index.js
 
 ```javascript
-import './commands';
+export * from './commands';
 ```
 
 - Use it:
 
-### ./cypress/integration/hotel-collection.spec.js
+### ./tests/login.spec.js
 
 ```diff
-describe('Hotel collection specs', () => {
-  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
-    // Arrange
--   cy.server();
--   cy.route('GET', 'http://localhost:3000/api/hotels', 'fixture:hotels').as(
--     'fetchHotels'
--   );
+import { Selector, ClientFunction } from 'testcafe';
+import { config } from '../testcafe.config';
++ import { fillLoginForm } from './commands';
 
-    // Act
--   cy.visit('#/hotels');
-    cy.loadAndVisit();
+fixture('Login specs').page(config.baseUrl);
 
-    // Assert
--   cy.wait('@fetchHotels');
-    cy.get('[data-testid="hotelCollectionContainer"]')
-      .children()
-      .should('have.length', 2);
-  });
+test('should show an alert with a message when type invalid credentials', async t => {
+  // Arrange
+  const user = 'admin';
+  const password = '1234';
+- const userInput = Selector('[data-testid=userInput]');
+- const passwordInput = Selector('[data-testid=passwordInput]');
+  await t.setNativeDialogHandler(() => true);
+
+  // Act
+- await t.typeText(userInput, user);
+- await t.typeText(passwordInput, password);
+- await t.click(Selector('[data-testid=loginButton]'));
++ await fillLoginForm(t, user, password);
+
 ...
-```
-
-- Even, we could pass parameters if we want to be more generics and apply SRP:
-
-### ./cypress/support/commands.js
-
-```diff
-- Cypress.Commands.add('loadAndVisit', () => {
-+ Cypress.Commands.add('loadData', () => {
-+ const { apiPath, fixture, fetchAlias } = params;
-  cy.server();
-- cy.route('GET', 'http://localhost:3000/api/hotels', 'fixture:hotels').as(
--   'fetchHotels'
-- );
-+ fixture
-+   ? cy
-+       .route('GET', `http://localhost:3000/api${apiPath}`, fixture)
-+       .as(fetchAlias)
-+   : cy.route('GET', `http://localhost:3000/api${apiPath}`).as(fetchAlias);
-- cy.visit('#/hotels');
-- cy.wait('@fetchHotels');
+  // Assert
+- await t.expect(userInput.value).eql(user);
++ await t.expect(Selector('[data-testid=userInput]').value).eql(user);
+- await t.expect(passwordInput.value).eql(password);
++ await t.expect(Selector('[data-testid=passwordInput]').value).eql(password);
+...
 });
 
-```
+test('should update header user name and navigate to hotels url when type valid credentials', async t => {
+  // Arrange
+  const user = 'admin';
+  const password = 'test';
+- const userInput = Selector('[data-testid=userInput]');
+- const passwordInput = Selector('[data-testid=passwordInput]');
+  const getURL = ClientFunction(() => window.location.href);
 
-- Update it:
+  // Act
+- await t.typeText(userInput, user);
+- await t.typeText(passwordInput, password);
+- await t.click(Selector('[data-testid=loginButton]'));
++ await fillLoginForm(t, user, password);
 
-### ./cypress/integration/hotel-collection.spec.js
+  // Assert
+- await t.expect(userInput.value).eql(user);
++ await t.expect(Selector('[data-testid=userInput]').value).eql(user);
+- await t.expect(passwordInput.value).eql(password);
++ await t.expect(Selector('[data-testid=passwordInput]').value).eql(password);
+  await t.expect(Selector('[data-testid=loginText]').textContent).eql(user);
+  const url = await getURL();
+  await t.expect(url).eql('http://localhost:8080/#/hotels');
+});
 
-```diff
-...
-  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
-    // Arrange
-+   const params = {
-+     apiPath: '/hotels',
-+     fixture: 'fixture:hotels',
-+     fetchAlias: 'fetchHotels',
-+   };
-
-    // Act
--   cy.loadAndVisit();
-+   cy.loadData(params);
-+   cy.visit('#/hotels');
-
-    // Assert
-+   cy.wait('@fetchHotels');
-    cy.get('[data-testid="hotelCollectionContainer"]')
-      .children()
-      .should('have.length', 2);
-  });
-
-  it('should fetch hotel collection from backend and show it in screen when visit /hotels urls', () => {
-    // Arrange
--   cy.server();
--   cy.route('GET', 'http://localhost:3000/api/hotels').as('fetchHotels');
-+   const params = {
-+     apiPath: '/hotels',
-+     fetchAlias: 'fetchHotels',
-+   };
-
-    // Act
--   cy.visit('#/hotels');
-+   cy.loadData(params);
-+   cy.visit('#/hotels');
-
-    // Assert
-    cy.wait('@fetchHotels');
-    cy.get('[data-testid="hotelCollectionContainer"]')
-      .children()
-      .should('have.length', 10);
-  });
 ```
 
 # About Basefactor + Lemoncode
