@@ -5,7 +5,7 @@
       "type": "node",
       "request": "launch",
       "protocol": "inspector",
-      "name": "Run e2e",
+      "name": "Debug e2e spec",
       "program": "${workspaceRoot}/node_modules/testcafe/bin/testcafe.js",
       "args": ["chrome", "${relativeFile}"],
       "console": "integratedTerminal"

@@ -24,13 +24,19 @@ npm install
       "type": "node",
       "request": "launch",
       "protocol": "inspector",
-      "name": "Run e2e",
+      "name": "Debug e2e spec",
       "program": "${workspaceRoot}/node_modules/testcafe/bin/testcafe.js",
       "args": ["chrome", "${relativeFile}"],
       "console": "integratedTerminal"
     }
   ]
 }
+```
+
+- This time, we need to run `app` and then run the VSCode debug process:
+
+```bash
+npm run start:dev
 ```
 
 # About Basefactor + Lemoncode
