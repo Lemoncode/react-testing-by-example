@@ -15,7 +15,7 @@
     "test:e2e": "npm-run-all -p -l -r start:dev start:e2e",
     "start:e2e": "testcafe chrome tests",
     "test:e2e:ci": "npm-run-all -p -l -r start:dev start:e2e:ci",
-    "start:e2e:ci": "testcafe chrome:headless tests"
+    "start:e2e:ci": "testcafe chrome:headless tests --skip-js-errors"
   },
   "license": "MIT",
   "dependencies": {

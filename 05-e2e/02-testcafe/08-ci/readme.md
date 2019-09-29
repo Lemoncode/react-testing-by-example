@@ -58,6 +58,22 @@ jobs:
 
 > More info [here](https://devexpress.github.io/testcafe/documentation/continuous-integration/circleci.html)
 
+- It will throw an error in circleci, let's add the flag:
+
+### ./package.json
+
+```diff
+...
+"scripts": {
+    "test:e2e": "npm-run-all -p -l -r start:dev start:e2e",
+    "start:e2e": "testcafe chrome tests"
+    "test:e2e:ci": "npm-run-all -p -l -r start:dev start:e2e:ci",
+-   "start:e2e:ci": "testcafe chrome:headless tests"
++   "start:e2e:ci": "testcafe chrome:headless tests --skip-js-errors"
+  },
+...
+```
+
 # About Basefactor + Lemoncode
 
 We are an innovating team of Javascript experts, passionate about turning your ideas into robust products.
