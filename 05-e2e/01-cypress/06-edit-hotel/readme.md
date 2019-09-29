@@ -177,7 +177,7 @@ describe('Hotel edit specs', () => {
 
 - Update `hotel card` component:
 
-### ./src/pods/hotel-collection/components.jsx
+### ./src/pods/hotel-collection/components/hotel-card.component.jsx
 
 ```diff
 ...

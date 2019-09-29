@@ -14,15 +14,17 @@ npm install
 
 - To edit an hotel we need to visit `hotels` and click on edit button:
 
-### ./cypress/integration/hotel-edit.spec.js
+### ./tests/hotel-edit.spec.js
 
 ```javascript
-describe('Hotel edit specs', () => {
-  it('should navigate to second hotel when click on edit second hotel', () => {
-    // Arrange
-    // Act
-    // Assert
-  });
+import { config } from '../testcafe.config';
+
+fixture('Hotel edit specs').page(`${config.baseUrl}/#/hotels`);
+
+test('should navigate to second hotel when click on edit second hotel', async t => {
+  // Arrange
+  // Act
+  // Assert
 });
 ```
 
@@ -52,27 +54,101 @@ describe('Hotel edit specs', () => {
 
 - Add spec:
 
-### ./cypress/integration/hotel-edit.spec.js
+### ./tests/hotel-edit.spec.js
 
 ```diff
-describe('Hotel edit specs', () => {
-  it('should navigate to second hotel when click on edit second hotel', () => {
++ import { Selector } from 'testcafe';
+import { config } from '../testcafe.config';
++ import { getMockRequest, mockHotels } from './mocks';
+
+fixture('Hotel edit specs').page(`${config.baseUrl}/#/hotels`);
+
+- test('should navigate to second hotel when click on edit second hotel', async t => {
++ test.requestHooks(
++   getMockRequest('http://localhost:3000/api/hotels', mockHotels, 200)
++ )(
++   'should navigate to second hotel when click on edit second hotel',
+  // Arrange
+
+  // Act
++ await t.click(
++   Selector('[data-testid="editHotelButton-with-hotelId=id-2"]')
++ );
+
+  // Assert
+
+});
+
+```
+
+- Let's extract `getUrl` method:
+
+### ./tests/commands/commands.js
+
+```diff
+- import { Selector } from 'testcafe';
++ import { Selector, ClientFunction } from 'testcafe';
+
+export const fillLoginForm = async (t, user, password) => {
+  await t.typeText(Selector('[data-testid=userInput]'), user);
+  await t.typeText(Selector('[data-testid=passwordInput]'), password);
+  await t.click(Selector('[data-testid=loginButton]'));
+};
+
++ export const getURL = ClientFunction(() => window.location.href);
+
+```
+
+- Update spec:
+
+### ./tests/hotel-edit.spec.js
+
+```diff
+import { Selector } from 'testcafe';
+import { config } from '../testcafe.config';
+import { getMockRequest, mockHotels } from './mocks';
++ import { getURL } from './commands';
+
+...
+test.requestHooks(
+  getMockRequest('http://localhost:3000/api/hotels', mockHotels, 200)
+)(
+  'should navigate to second hotel when click on edit second hotel',
+  async t => {
     // Arrange
-+   const params = {
-+     apiPath: '/hotels',
-+     fixture: 'fixture:hotels',
-+     fetchAlias: 'fetchHotels',
-+   };
 
     // Act
-+   cy.loadData(params);
-+   cy.visit('#/hotels');
-+   cy.wait('@fetchHotels');
-+   cy.get('[data-testid="editHotelButton-with-hotelId=id-2"]').click();
+    await t.click(
+      Selector('[data-testid="editHotelButton-with-hotelId=id-2"]')
+    );
 
     // Assert
-+   cy.url().should('eq', 'http://localhost:8080/#/hotels/id-2');
-  });
++   const url = await getURL();
++   await t.expect(url).eql('http://localhost:8080/#/hotels/id-2');
+  }
+);
+
+```
+
+- Update `login` spec:
+
+### ./tests/hotel-edit.spec.js
+
+```diff
+import { Selector, ClientFunction } from 'testcafe';
+import { config } from '../testcafe.config';
+- import { fillLoginForm } from './commands';
++ import { fillLoginForm, getURL } from './commands';
+
+...
+
+test('should update header user name and navigate to hotels url when type valid credentials', async t => {
+  // Arrange
+  const user = 'admin';
+  const password = 'test';
+- const getURL = ClientFunction(() => window.location.href);
+
+...
 });
 
 ```
@@ -177,7 +253,7 @@ describe('Hotel edit specs', () => {
 
 - Update `hotel card` component:
 
-### ./src/pods/hotel-collection/components.jsx
+### ./src/pods/hotel-collection/components/hotel-card.component.jsx
 
 ```diff
 ...
@@ -200,67 +276,91 @@ describe('Hotel edit specs', () => {
 
 - Add update `cities` ids with mocks:
 
-### ./cypress/fixtures/hotels.json
+### ./tests/mocks/hotels.js
 
 ```diff
-[
+export const mockHotels = [
   {
-    "id": "id-1",
-    "thumbNailUrl": "test-picture-1",
-    "name": "test-name-1",
-    "shortDescription": "test-description-1",
-    "address1": "test-address-1",
-    "hotelRating": 1,
--   "city": "test-city-1"
-+   "city": "Seattle"
+    id: 'id-1',
+    thumbNailUrl: 'test-picture-1',
+    name: 'test-name-1',
+    shortDescription: 'test-description-1',
+    address1: 'test-address-1',
+    hotelRating: 1,
+-   city: 'test-city-1',
++   city: 'Seattle',
   },
   {
-    "id": "id-2",
-    "thumbNailUrl": "test-picture-2",
-    "name": "test-name-2",
-    "shortDescription": "test-description-2",
-    "address1": "test-address-2",
-    "hotelRating": 2,
--   "city": "test-city-2"
-+   "city": "Chicago"
-  }
-]
+    id: 'id-2',
+    thumbNailUrl: 'test-picture-2',
+    name: 'test-name-2',
+    shortDescription: 'test-description-2',
+    address1: 'test1-address-2',
+    hotelRating: 2,
+-   city: 'test-city-2',
++   city: 'Chicago',
+  },
+];
 
 ```
 
 - Update spec:
 
-### ./cypress/integration/hotel-edit.spec.js
+### ./tests/hotel-edit.spec.js
 
 ```diff
+import { Selector } from 'testcafe';
+import { config } from '../testcafe.config';
+import { getMockRequest, mockHotels } from './mocks';
+import { getURL } from './commands';
+
+- fixture('Hotel edit specs').page(`${config.baseUrl}/#/hotels`);
++ fixture('Hotel edit specs')
++   .page(`${config.baseUrl}/#/hotels`)
++   .requestHooks(
++     getMockRequest('http://localhost:3000/api/hotels', mockHotels, 200)
++   );
+
+- test.requestHooks(
+-   getMockRequest('http://localhost:3000/api/hotels', mockHotels, 200)
+- )(
+-   'should navigate to second hotel when click on edit second hotel',
+-   async t => {
++ test('should navigate to second hotel when click on edit second hotel', async t => {
+    // Arrange
+
+    // Act
+    await t.click(
+      Selector('[data-testid="editHotelButton-with-hotelId=id-2"]')
+    );
+
+    // Assert
+    const url = await getURL();
+    await t.expect(url).eql('http://localhost:8080/#/hotels/id-2');
+  }
+);
+
 ...
-+ it('should update hotel name, and see the update after save button click', () => {
++ test('should update hotel name, and see the update after save button click', async t => {
 +   // Arrange
-+   const params = {
-+     apiPath: '/hotels',
-+     fixture: 'fixture:hotels',
-+     fetchAlias: 'fetchHotels',
-+   };
++   const nameInput = Selector('[data-testid="nameInput"]');
 +   const updatedName = 'updated name value';
 
 +   // Act
-+   cy.loadData(params);
-+   cy.visit('#/hotels');
-+   cy.wait('@fetchHotels');
-+   cy.get('[data-testid="editHotelButton-with-hotelId=id-2"]').click();
-+   cy.get('[data-testid="nameInput"]')
-+     .clear()
-+     .type(updatedName);
-+   cy.get('[data-testid="ratingContainer"] :nth-child(4)').click();
-+   cy.get('[data-testid="saveButton"]').click();
++   await t.click(Selector('[data-testid="editHotelButton-with-hotelId=id-2"]'));
++   await t.selectText(nameInput).pressKey('delete');
++   await t.typeText(nameInput, updatedName);
++   await t.click(Selector('[data-testid="ratingContainer"] :nth-child(4)'));
++   await t.click(Selector('[data-testid="saveButton"]'));
 
 +   // Assert
-+   cy.url().should('eq', 'http://localhost:8080/#/hotels');
-+   cy.get('[data-testid="hotelName-with-hotelId=id-2"]').should(
-+     'have.text',
-+     updatedName
-+   );
++   const url = await getURL();
++   await t.expect(url).eql('http://localhost:8080/#/hotels');
++   await t
++     .expect(Selector('[data-testid="hotelName-with-hotelId=id-2"]').textContent)
++     .eql(updatedName);
 + });
+
 ```
 
 # About Basefactor + Lemoncode

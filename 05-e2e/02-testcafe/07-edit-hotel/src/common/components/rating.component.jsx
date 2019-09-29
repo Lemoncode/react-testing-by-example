@@ -10,7 +10,12 @@ export const RatingComponent = props => {
   };
   return (
     <>
-      <Rating value={value} max={max} onChange={handleChange} />
+      <Rating
+        value={value}
+        max={max}
+        onChange={handleChange}
+        data-testid={props['data-testid']}
+      />
       <Typography variant="caption" color="error" gutterBottom>
         {error}
       </Typography>

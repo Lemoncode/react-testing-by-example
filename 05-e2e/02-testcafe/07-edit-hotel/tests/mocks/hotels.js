@@ -6,7 +6,7 @@ export const mockHotels = [
     shortDescription: 'test-description-1',
     address1: 'test-address-1',
     hotelRating: 1,
-    city: 'test-city-1',
+    city: 'Seattle',
   },
   {
     id: 'id-2',
@@ -15,6 +15,6 @@ export const mockHotels = [
     shortDescription: 'test-description-2',
     address1: 'test-address-2',
     hotelRating: 2,
-    city: 'test-city-2',
+    city: 'Chicago',
   },
 ];

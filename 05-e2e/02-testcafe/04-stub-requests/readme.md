@@ -50,7 +50,7 @@ describe('Hotel collection specs', () => {
 import { config } from '../testcafe.config';
 
 - fixture('Hotel collection specs').page(config.baseUrl);
-+ fixture('Hotel collection specs').page(`${config.baseUrl}#/hotels`);
++ fixture('Hotel collection specs').page(`${config.baseUrl}/#/hotels`);
 
 test('should fetch 2 hotels and show it in screen when visit /hotels urls', async t => {
   // Arrange
@@ -74,7 +74,7 @@ test('should fetch 2 hotels and show it in screen when visit /hotels urls', asyn
 + import { Selector, RequestMock } from 'testcafe';
 import { config } from '../testcafe.config';
 
-fixture('Hotel collection specs').page(`${config.baseUrl}#/hotels`);
+fixture('Hotel collection specs').page(`${config.baseUrl}/#/hotels`);
 
 +   const hotels = [
 +     {
@@ -196,7 +196,7 @@ export const getMockRequest = (url, data, statusCode) =>
 import { config } from '../testcafe.config';
 + import { getMockRequest, mockHotels } from './mocks';
 
-fixture('Hotel collection specs').page(`${config.baseUrl}#/hotels`);
+fixture('Hotel collection specs').page(`${config.baseUrl}/#/hotels`);
 
 -   const hotels = [
 -     {

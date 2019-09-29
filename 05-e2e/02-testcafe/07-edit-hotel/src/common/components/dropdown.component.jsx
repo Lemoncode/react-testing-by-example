@@ -15,6 +15,7 @@ export const DropdownComponent = props => {
       onChange={onChange}
       disabled={disabled}
       error={error}
+      data-testid={props['data-testid']}
     >
       {list.map(collection => (
         <MenuItem key={collection.id} value={collection.id}>

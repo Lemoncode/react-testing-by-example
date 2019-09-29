@@ -2,7 +2,7 @@ import { Selector } from 'testcafe';
 import { config } from '../testcafe.config';
 import { getMockRequest, mockHotels } from './mocks';
 
-fixture('Hotel collection specs').page(`${config.baseUrl}#/hotels`);
+fixture('Hotel collection specs').page(`${config.baseUrl}/#/hotels`);
 
 test.requestHooks(
   getMockRequest('http://localhost:3000/api/hotels', mockHotels, 200)

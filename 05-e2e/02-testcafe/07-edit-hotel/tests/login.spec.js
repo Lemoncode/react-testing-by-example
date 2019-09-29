@@ -1,6 +1,6 @@
 import { Selector, ClientFunction } from 'testcafe';
 import { config } from '../testcafe.config';
-import { fillLoginForm } from './commands';
+import { fillLoginForm, getURL } from './commands';
 
 fixture('Login specs').page(config.baseUrl);
 
@@ -35,7 +35,6 @@ test('should update header user name and navigate to hotels url when type valid 
   // Arrange
   const user = 'admin';
   const password = 'test';
-  const getURL = ClientFunction(() => window.location.href);
 
   // Act
   await fillLoginForm(t, user, password);
