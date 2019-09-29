@@ -2,7 +2,7 @@
 
 In this example we are going to stub hotel request.
 
-We will start from `02-selectors`.
+We will start from `03-debug`.
 
 # Steps to build it
 
@@ -14,7 +14,7 @@ npm install
 
 - We will create `hotel-collection` specs:
 
-### ./cypress/integration/hotel-collection.spec.js
+### ./tests/hotel-collection.spec.js
 
 ```javascript
 describe('Hotel collection specs', () => {
@@ -43,32 +43,40 @@ describe('Hotel collection specs', () => {
 
 - Update spec:
 
-### ./cypress/integration/hotel-collection.spec.js
+### ./tests/hotel-collection.spec.js
 
 ```diff
-describe('Hotel collection specs', () => {
-  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
-    // Arrange
++ import { Selector } from 'testcafe';
+import { config } from '../testcafe.config';
 
-    // Act
-+   cy.visit('#/hotels');
+- fixture('Hotel collection specs').page(config.baseUrl);
++ fixture('Hotel collection specs').page(`${config.baseUrl}#/hotels`);
 
-    // Assert
-+   cy.get('[data-testid="hotelCollectionContainer"]')
-+     .children()
-+     .should('have.length', 0);
-  });
+test('should fetch 2 hotels and show it in screen when visit /hotels urls', async t => {
+  // Arrange
+
+  // Act
+
+  // Assert
++ await t.expect(
++   Selector('[data-testid=hotelCollectionContainer]').childElementCount
++ ).eql(0);
 });
+
 ```
 
 - How can we simulate, fetching 2 hotels?:
 
-### ./cypress/integration/hotel-collection.spec.js
+### ./tests/hotel-collection.spec.js
 
 ```diff
-describe('Hotel collection specs', () => {
-  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
-    // Arrange
+import { Selector } from 'testcafe';
+import { config } from '../testcafe.config';
+
+fixture('Hotel collection specs').page(`${config.baseUrl}#/hotels`);
+
+test('should fetch 2 hotels and show it in screen when visit /hotels urls', async t => {
+  // Arrange
 +   const hotels = [
 +     {
 +       id: 'id-1',
@@ -89,6 +97,18 @@ describe('Hotel collection specs', () => {
 +       city: 'test-city-2',
 +     },
 +   ];
+
+  // Act
+
+  // Assert
+  await t.expect(
+    Selector('[data-testid=hotelCollectionContainer]').childElementCount
+  ).eql(0);
+});
+
+describe('Hotel collection specs', () => {
+  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
+    // Arrange
 +   cy.server();
 +   cy.route('GET', 'http://localhost:3000/api/hotels', hotels);
 
@@ -104,6 +124,8 @@ describe('Hotel collection specs', () => {
 });
 
 ```
+
+> More info [here](https://devexpress.github.io/testcafe/documentation/test-api/intercepting-http-requests/)
 
 - This is a common task that we will have to do, so cypress provide the `fixtures` approach:
 
@@ -134,7 +156,7 @@ describe('Hotel collection specs', () => {
 
 - Update spec:
 
-### ./cypress/integration/hotel-collection.spec.js
+### ./tests/hotel-collection.spec.js
 
 ```diff
 describe('Hotel collection specs', () => {
@@ -180,7 +202,7 @@ describe('Hotel collection specs', () => {
 
 - Or a shorted way:
 
-### ./cypress/integration/hotel-collection.spec.js
+### ./tests/hotel-collection.spec.js
 
 ```diff
 describe('Hotel collection specs', () => {
