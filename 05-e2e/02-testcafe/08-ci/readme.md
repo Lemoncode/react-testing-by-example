@@ -19,10 +19,10 @@ npm install
 ```diff
 ...
 "scripts": {
-    "test:e2e": "npm-run-all -p -l start start:e2e",
-    "start:e2e": "cypress open",
-+   "test:e2e:ci": "npm-run-all -p -l- r start:dev run:e2e",
-+   "run:e2e": "cypress run"
+    "test:e2e": "npm-run-all -p -l -r start:dev start:e2e",
+    "start:e2e": "testcafe chrome tests"
++   "test:e2e:ci": "npm-run-all -p -l -r start:dev start:e2e:ci",
++   "start:e2e:ci": "testcafe chrome:headless tests"
   },
 ...
 ```
@@ -33,44 +33,7 @@ npm install
 npm run test:e2e:ci
 ```
 
-- As we see, `hotel collection specs` are failing. Since, we are running the web server without backend, we should remove spec retrieving real data.
-
-### ./cypress/integration/hotel-collection.spec.js
-
-```diff
-...
-- it('should fetch hotel collection from backend and show it in screen when visit /hotels urls', () => {
--   // Arrange
--   const params = {
--     apiPath: '/hotels',
--     fetchAlias: 'fetchHotels',
--   };
-
--   // Act
--   cy.loadData(params);
--   cy.visit('#/hotels');
-
--   // Assert
--   cy.wait('@fetchHotels');
--   cy.get('[data-testid="hotelCollectionContainer"]')
--     .children()
--     .should('have.length', 10);
-- });
-});
-
-```
-
-- Notice that `cypress` has added `screenshots` and `videos` with failing specs, we should ignore these folder for git:
-
-### ./.gitignore
-
-```diff
-...
-.awcache
-+ cypress/screenshots
-+ cypress/videos
-
-```
+- Notice that TestCafe doesn't add `screenshots` and `videos` by default, you should install some `dependencies`, more info [here](https://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/screenshots-and-videos.html)
 
 - Add circe ci config file:
 
@@ -82,12 +45,9 @@ jobs:
   build:
     working_directory: ~/test-ci-code
     docker:
-      - image: circleci/node:10
+      - image: circleci/node:10.14-browsers
     steps:
       - checkout
-      - run:
-          name: install cypress dependencies
-          command: 'sudo apt-get install xvfb libgtk-3-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2'
       - run:
           name: install
           command: 'npm install'
@@ -96,7 +56,7 @@ jobs:
           command: 'npm run test:e2e:ci'
 ```
 
-> We need to install cypress dependencies. More info [here](https://docs.cypress.io/guides/guides/continuous-integration.html#Advanced-setup)
+> More info [here](https://devexpress.github.io/testcafe/documentation/continuous-integration/circleci.html)
 
 # About Basefactor + Lemoncode
 
