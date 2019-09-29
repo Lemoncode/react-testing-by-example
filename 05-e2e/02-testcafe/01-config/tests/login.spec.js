@@ -1,4 +1,4 @@
-import { config } from '../testcafe.js';
+import { config } from '../testcafe.config';
 
 fixture('Login specs').page(config.baseUrl);
 

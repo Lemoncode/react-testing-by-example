@@ -17,7 +17,12 @@ const InnerAppLayout = props => {
           <IconButton color="inherit" aria-label="Menu">
             <AccountCircle />
           </IconButton>
-          <Typography ref={useFlasher()} variant="h6" color="inherit">
+          <Typography
+            ref={useFlasher()}
+            variant="h6"
+            color="inherit"
+            data-testid="loginText"
+          >
             {login}
           </Typography>
         </Toolbar>

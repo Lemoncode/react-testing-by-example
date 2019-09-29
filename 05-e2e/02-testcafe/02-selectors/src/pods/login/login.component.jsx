@@ -22,6 +22,7 @@ export const LoginComponent = props => {
             value={credentials.login}
             onChange={onUpdateCredentials}
             error={credentialErrors.login.message}
+            data-testid="userInput"
           />
           <TextFieldComponent
             label="Password"
@@ -30,8 +31,14 @@ export const LoginComponent = props => {
             value={credentials.password}
             onChange={onUpdateCredentials}
             error={credentialErrors.password.message}
+            data-testid="passwordInput"
           />
-          <Button type="submit" variant="contained" color="primary">
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            data-testid="loginButton"
+          >
             Login
           </Button>
         </FormComponent>

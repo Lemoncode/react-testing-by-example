@@ -45,6 +45,9 @@ export const TextFieldComponent = props => {
       rows={rows}
       rowsMax={rowsMax}
       placeholder={placeholder}
+      inputProps={{
+        'data-testid': props['data-testid'],
+      }}
     >
       {children}
     </TextField>

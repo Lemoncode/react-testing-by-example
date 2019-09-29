@@ -47,6 +47,7 @@
     "prettier": "^1.17.1",
     "pretty-quick": "^1.11.0",
     "rimraf": "^2.6.3",
+    "testcafe": "^1.5.0",
     "webpack": "^4.32.2",
     "webpack-cli": "^3.3.2",
     "webpack-dev-server": "^3.4.1",

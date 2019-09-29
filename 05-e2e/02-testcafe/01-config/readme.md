@@ -70,7 +70,7 @@ test('visit the login page', async t => {
 
 - So far so good, we can add the base app url in `testcafe.js` to avoid repeat it in whole tests:
 
-### ./testcafe.js
+### ./testcafe.config.js
 
 ```javascript
 const config = {
@@ -85,7 +85,7 @@ export { config };
 ### ./tests/login.spec.js
 
 ```diff
-+ import { config } from '../testcafe.js';
++ import { config } from '../testcafe.config';
 - fixture('Login specs');
 + fixture('Login specs').page(config.baseUrl);
 

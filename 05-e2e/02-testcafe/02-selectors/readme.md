@@ -14,149 +14,107 @@ npm install
 
 - Let's add some specs to login page:
 
-### ./cypress/integration/login.spec.js
+### ./tests/login.spec.js
 
 ```diff
++ import { Selector } from 'testcafe';
+import { config } from '../testcafe.config';
+
+fixture('Login specs').page(config.baseUrl);
 describe('Login specs', () => {
-- it('visit the login page', () => {
-+ it('should show an alert with a message when type invalid credentials', () => {
-+   // Arrange
-+   const user = 'admin';
-+   const password = '1234';
+- test('visit the login page', async t => {
++ test('should show an alert with a message when type invalid credentials', async t => {
++ // Arrange
++ const user = 'admin';
++ const password = '1234';
 
-+   // Act
-    cy.visit('/');
-+   cy.get(':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input').type(
-+     user
-+   );
++ // Act
++ await t.typeText(
++   Selector(':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input'),
++   user
++ );
++ await t.typeText(
++   Selector(':nth-child(2) > .MuiInputBase-root > .MuiInputBase-input'),
++   password
++ );
 
-+   cy.get(':nth-child(2) > .MuiInputBase-root > .MuiInputBase-input').type(
-+     password
-+   );
-
-+   // Assert
-+   cy.get(':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input').should(
-+     'have.value',
-+     user
-+   );
-+   cy.get(':nth-child(2) > .MuiInputBase-root > .MuiInputBase-input').should(
-+     'have.value',
-+     password
-+   );
-  });
++ // Assert
++ await t
++   .expect(
++     Selector(':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input').value
++   )
++   .eql(user);
++ await t
++   .expect(
++     Selector(':nth-child(2) > .MuiInputBase-root > .MuiInputBase-input').value
++   )
++   .eql(password);
 });
 
 ```
 
 - Notice that we are using selectors like css selectors, the first refactor that we could think is assign selectors to a variable like:
 
-### ./cypress/integration/login.spec.js
+### ./tests/login.spec.js
 
 ```diff
-describe('Login specs', () => {
-  it('should show an alert with a message when type invalid credentials', () => {
-    // Arrange
-    const user = 'admin';
-    const password = '1234';
+test('should show an alert with a message when type invalid credentials', async t => {
+  // Arrange
+  const user = 'admin';
+  const password = '1234';
++ const userInput = Selector(
++   ':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input'
++ );
++ const passwordInput = Selector(
++   ':nth-child(2) > .MuiInputBase-root > .MuiInputBase-input'
++ );
 
-    // Act
-    cy.visit('/');
-+   const userInput = cy.get(
-+     ':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input'
-+   );
-+   const passwordInput = cy.get(
-+     ':nth-child(2) > .MuiInputBase-root > .MuiInputBase-input'
-+   );
--   cy.get(':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input').type(
--     user
--   );
-+   userInput.type(user);
+  // Act
+- await t.typeText(
+-   Selector(':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input'),
+-    user
+- );
++ await t.typeText(userInput, user);
+- await t.typeText(
+-   Selector(':nth-child(2) > .MuiInputBase-root > .MuiInputBase-input'),
+-   password
+- );
++ await t.typeText(passwordInput, password);
 
--   cy.get(':nth-child(2) > .MuiInputBase-root > .MuiInputBase-input').type(
--     password
--   );
-+   passwordInput.type(password);
-
-    // Assert
--   cy.get(':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input').should(
--     'have.value',
--     user
--   );
-+   userInput.should('have.value', user);
--   cy.get(':nth-child(2) > .MuiInputBase-root > .MuiInputBase-input').should(
--     'have.value',
--     password
--   );
-+   passwordInput.should('have.value', password);
-  });
+  // Assert
+- await t
+-   .expect(
+-     Selector(':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input').value
+-   )
+-   .eql(user);
++ await t.expect(userInput.value).eql(user);
+- await t
+-   .expect(
+-     Selector(':nth-child(2) > .MuiInputBase-root > .MuiInputBase-input').value
+-   )
+-   .eql(password);
++ await t.expect(passwordInput.value).eql(password);
 });
 
 ```
-
-- This doesn't work, because `cypress commands` are enqueued and run it in async way. Let's refator it:
-
-### ./cypress/integration/login.spec.js
-
-```diff
-describe('Login specs', () => {
-  it('should show an alert with a message when type invalid credentials', () => {
-    // Arrange
-    const user = 'admin';
-    const password = '1234';
-
-    // Act
-    cy.visit('/');
--   const userInput = cy.get(
--     ':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input'
--   );
-+   cy.get(':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input').as(
-+      'userInput'
-+   );
--   const passwordInput = cy.get(
--     ':nth-child(2) > .MuiInputBase-root > .MuiInputBase-input'
--   );
-+   cy.get(':nth-child(2) > .MuiInputBase-root > .MuiInputBase-input').as(
-+     'passwordInput'
-+   );
--   userInput.type(user);
-+   cy.get('@userInput').type(user);
--   passwordInput.type(password);
-+   cy.get('@passwordInput').type(password);
-
-    // Assert
--   userInput.should('have.value', user);
-+   cy.get('@userInput').should('have.value', user);
--   passwordInput.should('have.value', password);
-+   cy.get('@passwordInput').should('have.value', password);
-  });
-});
-
-```
-
-> More info [here](https://docs.cypress.io/guides/core-concepts/variables-and-aliases.html#Return-Values)
 
 - Another important best practice, it's using `data-testid` selectors instead of `css classes`. With this approach, we are isolating the test from real implementation:
 
-### ./cypress/integration/login.spec.js
+### ./tests/login.spec.js
 
 ```diff
-describe('Login specs', () => {
-  it('should show an alert with a message when type invalid credentials', () => {
-    // Arrange
-    const user = 'admin';
-    const password = '1234';
-
-    // Act
-    cy.visit('/');
--   cy.get(':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input').as(
--     'userInput'
--   );
-+   cy.get('[data-testid=userInput]').as('userInput');
--   cy.get(':nth-child(2) > .MuiInputBase-root > .MuiInputBase-input').as(
--     'passwordInput'
--   );
-+   cy.get('[data-testid=passwordInput]').as('passwordInput');
-
+test('should show an alert with a message when type invalid credentials', async t => {
+  // Arrange
+  const user = 'admin';
+  const password = '1234';
+- const userInput = Selector(
+-   ':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input'
+- );
++ const userInput = Selector('[data-testid=userInput]');
+- const passwordInput = Selector(
+-   ':nth-child(2) > .MuiInputBase-root > .MuiInputBase-input'
+- );
++ const passwordInput = Selector('[data-testid=passwordInput]');
 ...
 });
 
@@ -232,38 +190,75 @@ export const LoginComponent = props => {
 
 - Checking modal error message when click on button with invalid credentials:
 
-### ./cypress/integration/login.spec.js
+### ./tests/login.spec.js
 
 ```diff
-describe('Login specs', () => {
-  it('should show an alert with a message when type invalid credentials', () => {
-    // Arrange
-    const user = 'admin';
-    const password = '1234';
-+   const spy = cy.spy().as('alertSpy');
-+   cy.on('window:alert', spy);
+test('should show an alert with a message when type invalid credentials', async t => {
+  // Arrange
+  const user = 'admin';
+  const password = '1234';
+  const userInput = Selector('[data-testid=userInput]');
+  const passwordInput = Selector('[data-testid=passwordInput]');
++ await t.setNativeDialogHandler(() => true);
 
-    // Act
-    cy.visit('/');
-    cy.get('[data-testid=userInput]').as('userInput');
-    cy.get('[data-testid=passwordInput]').as('passwordInput');
-    cy.get('@userInput').type(user);
-    cy.get('@passwordInput').type(password);
-+   cy.get('[data-testid=loginButton]').click();
+  // Act
+  await t.typeText(userInput, user);
+  await t.typeText(passwordInput, password);
++ await t.click(Selector('[data-testid=loginButton]'));
 
-    // Assert
-    cy.get('@userInput').should('have.value', user);
-    cy.get('@passwordInput').should('have.value', password);
-+   cy.get('@alertSpy').should(
-+     'have.been.calledWith',
+  // Assert
+  await t.expect(userInput.value).eql(user);
+  await t.expect(passwordInput.value).eql(password);
++ const [alert] = await t.getNativeDialogHistory();
++ await t
++   .expect(alert.text)
++   .eql(
 +     'invalid credentials, use admin/test, excercise: display a mui snackbar instead of this alert.'
 +   );
-  });
 });
 
 ```
 
-> More info in [event-types](https://docs.cypress.io/api/events/catalog-of-events.html#Event-Types)
+> More info in [handling-native-dialogs]https://devexpress.github.io/testcafe/documentation/test-api/handling-native-dialogs.html)
+
+- Previous code does not work, because there is a condition race, between open the window.alert and `getNativeDialogHistory`. Let's refactor it:
+
+### ./tests/login.spec.js
+
+```diff
+test('should show an alert with a message when type invalid credentials', async t => {
+  // Arrange
+  const user = 'admin';
+  const password = '1234';
+  const userInput = Selector('[data-testid=userInput]');
+  const passwordInput = Selector('[data-testid=passwordInput]');
+  await t.setNativeDialogHandler(() => true);
+
+  // Act
+  await t.typeText(userInput, user);
+  await t.typeText(passwordInput, password);
+  await t.click(Selector('[data-testid=loginButton]'));
+
++ const getAlert = () =>
++   new Promise(resolve => {
++     setTimeout(() => {
++       t.getNativeDialogHistory().then(([alert]) => resolve(alert));
++     }, 500);
++   });
+
+  // Assert
+  await t.expect(userInput.value).eql(user);
+  await t.expect(passwordInput.value).eql(password);
+- const [alert] = await t.getNativeDialogHistory();
++ const alert = await getAlert;
+  await t
+    .expect(alert.text)
+    .eql(
+      'invalid credentials, use admin/test, excercise: display a mui snackbar instead of this alert.'
+    );
+});
+
+```
 
 - Now, we could test when it's a succeded login:
 
@@ -283,29 +278,33 @@ describe('Login specs', () => {
 ...
 ```
 
-### ./cypress/integration/login.spec.js
+### ./tests/login.spec.js
 
 ```diff
+- import { Selector } from 'testcafe';
++ import { Selector, ClientFunction } from 'testcafe';
+import { config } from '../testcafe.config';
 ...
-+ it('should update header user name and navigate to hotels url when type valid credentials', () => {
++ test('should update header user name and navigate to hotels url when type valid credentials', async t => {
 +   // Arrange
 +   const user = 'admin';
 +   const password = 'test';
-
++   const userInput = Selector('[data-testid=userInput]');
++   const passwordInput = Selector('[data-testid=passwordInput]');
++   const getURL = ClientFunction(() => window.location.href);
++
 +   // Act
-+   cy.visit('/');
-+   cy.get('[data-testid=userInput]').as('userInput');
-+   cy.get('[data-testid=passwordInput]').as('passwordInput');
-+   cy.get('@userInput').type(user);
-+   cy.get('@passwordInput').type(password);
-+   cy.get('[data-testid=loginButton]').click();
-
++   await t.typeText(userInput, user);
++   await t.typeText(passwordInput, password);
++   await t.click(Selector('[data-testid=loginButton]'));
++
 +   // Assert
-+   cy.get('@userInput').should('have.value', user);
-+   cy.get('@passwordInput').should('have.value', password);
-+   cy.get('[data-testid=loginText]').should('have.text', user);
-+   cy.url().should('eq', 'http://localhost:8080/#/hotels');
-+ });
++   await t.expect(userInput.value).eql(user);
++   await t.expect(passwordInput.value).eql(password);
++   await t.expect(Selector('[data-testid=loginText]').textContent .eql(user);
++   const url = await getURL();
++   await t.expect(url).eql('http://localhost:8080/#/hotels');
+});
 ```
 
 # About Basefactor + Lemoncode
