@@ -16,6 +16,7 @@ describe('NameCollection component specs', () => {
     const elements = await waitForElement(() => getAllByTestId('name'));
 
     // Assert
+    expect(getStub).toHaveBeenCalled();
     expect(elements.length).toEqual(1);
     expect(elements[0].textContent).toEqual('John Doe');
   });
