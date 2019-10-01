@@ -1,6 +1,5 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { usePolling } from './usePolling';
-import { TIMEOUT } from 'dns';
 
 describe('usePolling specs', () => {
   it('should return count equals 0 when initialize the hook', () => {
