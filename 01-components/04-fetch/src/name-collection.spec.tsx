@@ -13,12 +13,9 @@ describe('NameCollection component specs', () => {
     // Act
     const { getAllByTestId } = render(<NameCollection />);
 
-    await waitForElement(() => getAllByTestId('name'));
-
-    const elements = getAllByTestId('name');
+    const elements = await waitForElement(() => getAllByTestId('name'));
 
     // Assert
-    expect(getStub).toHaveBeenCalled();
     expect(elements.length).toEqual(1);
     expect(elements[0].textContent).toEqual('John Doe');
   });
@@ -32,9 +29,7 @@ describe('NameCollection component specs', () => {
     // Act
     const { getAllByTestId } = render(<NameCollection />);
 
-    await waitForElement(() => getAllByTestId('name'));
-
-    const elements = getAllByTestId('name');
+    const elements = await waitForElement(() => getAllByTestId('name'));
 
     // Assert
     expect(getStub).toHaveBeenCalled();

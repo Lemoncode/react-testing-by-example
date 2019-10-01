@@ -23,7 +23,6 @@ const url = 'https://jsonplaceholder.typicode.com/users';
 
 export const getNameCollection = (): Promise<string[]> =>
   Axios.get(url).then(({ data }) => data.map(user => user.name));
-
 ```
 
 - Let's create a component that make use of this api and display that list.
@@ -46,13 +45,11 @@ export const NameCollection: React.FunctionComponent = () => {
   return (
     <ul>
       {nameCollection.map(name => (
-        <li key="name">{name}</li>
+        <li key={name}>{name}</li>
       ))}
     </ul>
   );
 };
-
-
 ```
 
 - Now let's use it in the _app.tsx_ file.
@@ -86,11 +83,9 @@ import { NameCollection } from './name-collection';
 describe('NameCollection component specs', () => {
   it('', () => {
     // Arrange
-
     // Act
-
     // Assert
-  })
+  });
 });
 ```
 
@@ -116,9 +111,7 @@ describe('NameCollection component specs', () => {
     // Act
 +   const { getByText } = render(<NameCollection />);
 
-+   await waitForElement(() => getByText('John Doe'));
-
-+   const element = getByText('John Doe');
++   const element =  await waitForElement(() => getByText('John Doe'));
 
     // Assert
 +   expect(getStub).toHaveBeenCalled();
@@ -137,9 +130,9 @@ describe('NameCollection component specs', () => {
 
   return (
     <ul>
-      {nameCollection.map((name, index) => (
--       <li key={index}>{name}</li>
-+       <li key={index} data-testid="name">
+      {nameCollection.map(name => (
+-       <li key={name}>{name}</li>
++       <li key={name} data-testid="name">
 +         {name}
 +       </li>
       ))}
@@ -158,11 +151,8 @@ describe('NameCollection component specs', () => {
 -   const { getByText } = render(<NameCollection />);
 +   const { getAllByTestId } = render(<NameCollection />);
 
--   await waitForElement(() => getByText('John Doe'));
-+   await waitForElement(() => getAllByTestId('name'));
-
--   const element = getByText('John Doe');
-+   const elements = getAllByTestId('name');
+-   const element =  await waitForElement(() => getByText('John Doe'));
++   const elements = await waitForElement(() => getAllByTestId('name'));
 
     // Assert
     expect(getStub).toHaveBeenCalled();
@@ -190,9 +180,7 @@ describe('NameCollection component specs', () => {
 +   // Act
 +   const { getAllByTestId } = render(<NameCollection />);
 
-+   await waitForElement(() => getAllByTestId('name'));
-
-+   const elements = getAllByTestId('name');
++   const elements = await waitForElement(() => getAllByTestId('name'));
 
 +   // Assert
 +   expect(getStub).toHaveBeenCalled();
