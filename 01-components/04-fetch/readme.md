@@ -23,7 +23,6 @@ const url = 'https://jsonplaceholder.typicode.com/users';
 
 export const getNameCollection = (): Promise<string[]> =>
   Axios.get(url).then(({ data }) => data.map(user => user.name));
-
 ```
 
 - Let's create a component that make use of this api and display that list.
@@ -51,8 +50,6 @@ export const NameCollection: React.FunctionComponent = () => {
     </ul>
   );
 };
-
-
 ```
 
 - Now let's use it in the _app.tsx_ file.
@@ -86,11 +83,9 @@ import { NameCollection } from './name-collection';
 describe('NameCollection component specs', () => {
   it('', () => {
     // Arrange
-
     // Act
-
     // Assert
-  })
+  });
 });
 ```
 
@@ -115,10 +110,7 @@ describe('NameCollection component specs', () => {
 
     // Act
 +   const { getByText } = render(<NameCollection />);
-
-+   await waitForElement(() => getByText('John Doe'));
-
-+   const element = getByText('John Doe');
++   const element = await waitForElement(() => getByText('John Doe'));
 
     // Assert
 +   expect(getStub).toHaveBeenCalled();
@@ -127,6 +119,20 @@ describe('NameCollection component specs', () => {
 });
 
 ```
+
+```javascript
+const getStub = jest
+  .spyOn(api, 'getNameCollection')
+  .mockResolvedValue(['John Doe']);
+```
+
+Notice that the created _stub_ is not replacing the implementation of our _api_. Its behavior still being asynchronous.
+
+```javascript
+const element = await waitForElement(() => getByText('John Doe'));
+```
+
+Since the component is feeded with data in asynchronous way we have to _wait_.
 
 - We will focus on check only that a user will check without see the implementation. If we want to test how many element will create:
 

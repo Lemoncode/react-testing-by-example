@@ -1,6 +1,6 @@
 # 03 Integration testing
 
-So far we have just unit tested components, what about making an integration test?
+So far we just have unit tested components, what about making an integration test?
 We can mount a bunch of components and test them all together !
 
 We will start from `02-name-edit`.
@@ -29,7 +29,6 @@ export const Display: React.FunctionComponent<Props> = props => {
 
   return <h3 data-testid="userName-label">{userName}</h3>;
 };
-
 ```
 
 ### ./src/edit.tsx
@@ -53,7 +52,6 @@ export const Edit: React.FunctionComponent<Props> = props => {
     />
   );
 };
-
 ```
 
 - Update `name-edit` component:
