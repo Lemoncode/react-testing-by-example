@@ -52,7 +52,7 @@ Redux reducers have a minimum of three executions. The first one is when the sto
 + import { membersReducer, MembersState } from './members';
 +
   describe('pages/members/list/reducers/members reducer tests', () => {
-    it('should return the expected state when initialized with undefined initial state', () => {
++   it('should return the expected state when initialized with undefined initial state', () => {
       // Arrange
 +     const action: BaseAction = {
 +       type: 'foo',
@@ -115,7 +115,7 @@ Next we'll test the behavior when it receives an action with type FETCH_MEMBERS_
 
 Let's see how `deep-freeze` helps us to check immutability. Let's refactor `handleFetchMembersSuccess` case and mutate the state:
 
-### **./src/pages/members/list/reducers/members.spec.ts**
+### **./src/pages/members/list/reducers/members.ts**
 
 ```diff
 - const handleFetchMembersSuccess = (_state: MembersState, members: Member[]): MembersState => ({
@@ -142,7 +142,7 @@ TypeError: Cannot add property 0, object is not extensible
 
 That's because `deep-freeze` makes all properties of our `state` object non writable. When we try to mutate a property an error is thrown. Let's change back the implementation to get all tests happy.
 
-### **./src/pages/members/list/reducers/members.spec.ts**
+### **./src/pages/members/list/reducers/members.ts**
 
 ```diff
 - const handleFetchMembersSuccess = (state: MembersState, members: Member[]): MembersState => {

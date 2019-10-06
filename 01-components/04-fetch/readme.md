@@ -45,7 +45,7 @@ export const NameCollection: React.FunctionComponent = () => {
   return (
     <ul>
       {nameCollection.map(name => (
-        <li key="name">{name}</li>
+        <li key={name}>{name}</li>
       ))}
     </ul>
   );
@@ -110,7 +110,8 @@ describe('NameCollection component specs', () => {
 
     // Act
 +   const { getByText } = render(<NameCollection />);
-+   const element = await waitForElement(() => getByText('John Doe'));
+
++   const element =  await waitForElement(() => getByText('John Doe'));
 
     // Assert
 +   expect(getStub).toHaveBeenCalled();
@@ -143,9 +144,9 @@ Since the component is feeded with data in asynchronous way we have to _wait_.
 
   return (
     <ul>
-      {nameCollection.map((name, index) => (
--       <li key={index}>{name}</li>
-+       <li key={index} data-testid="name">
+      {nameCollection.map(name => (
+-       <li key={name}>{name}</li>
++       <li key={name} data-testid="name">
 +         {name}
 +       </li>
       ))}
@@ -164,11 +165,8 @@ Since the component is feeded with data in asynchronous way we have to _wait_.
 -   const { getByText } = render(<NameCollection />);
 +   const { getAllByTestId } = render(<NameCollection />);
 
--   await waitForElement(() => getByText('John Doe'));
-+   await waitForElement(() => getAllByTestId('name'));
-
--   const element = getByText('John Doe');
-+   const elements = getAllByTestId('name');
+-   const element =  await waitForElement(() => getByText('John Doe'));
++   const elements = await waitForElement(() => getAllByTestId('name'));
 
     // Assert
     expect(getStub).toHaveBeenCalled();
@@ -196,9 +194,7 @@ Since the component is feeded with data in asynchronous way we have to _wait_.
 +   // Act
 +   const { getAllByTestId } = render(<NameCollection />);
 
-+   await waitForElement(() => getAllByTestId('name'));
-
-+   const elements = getAllByTestId('name');
++   const elements = await waitForElement(() => getAllByTestId('name'));
 
 +   // Assert
 +   expect(getStub).toHaveBeenCalled();

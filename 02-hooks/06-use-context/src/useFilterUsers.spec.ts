@@ -39,7 +39,7 @@ describe('useFilterUsers specs', () => {
     // Assert
     expect(result.current.users).toEqual([]);
 
-    renderHook(() => result.current.setFilter('doe'));
+    act(() => result.current.setFilter(filter));
     await waitForNextUpdate();
 
     expect(getUsersByFilterSpy).toHaveBeenCalledWith('doe');
@@ -62,7 +62,7 @@ describe('useFilterUsers specs', () => {
     // Assert
     expect(result.current.users).toEqual([]);
 
-    renderHook(() => result.current.setFilter('smith'));
+    act(() => result.current.setFilter('smith'));
     await waitForNextUpdate();
 
     expect(getUsersByFilterSpy).toHaveBeenCalledWith('doe');

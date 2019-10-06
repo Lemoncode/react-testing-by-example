@@ -3,7 +3,7 @@ import { render, fireEvent } from '@testing-library/react';
 import { NameEdit } from './name-edit';
 
 describe('NameEdit component specs', () => {
-  it('should display a h3 and input elements with empty userName value', () => {
+  it('should display a label and input elements with empty userName value', () => {
     // Arrange
 
     // Act

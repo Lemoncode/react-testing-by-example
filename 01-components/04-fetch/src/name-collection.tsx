@@ -12,8 +12,8 @@ export const NameCollection: React.FunctionComponent = () => {
 
   return (
     <ul>
-      {nameCollection.map((name, index) => (
-        <li key={index} data-testid="name">
+      {nameCollection.map(name => (
+        <li key={name} data-testid="name">
           {name}
         </li>
       ))}

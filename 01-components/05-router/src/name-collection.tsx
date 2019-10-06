@@ -13,8 +13,8 @@ export const NameCollection: React.FunctionComponent = () => {
 
   return (
     <ul>
-      {nameCollection.map((name, index) => (
-        <Link key={index} to={`/users/${name}`}>
+      {nameCollection.map(name => (
+        <Link key={name} to={`/users/${name}`}>
           <li data-testid="name">{name}</li>
         </Link>
       ))}

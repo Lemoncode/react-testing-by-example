@@ -34,7 +34,6 @@ export const SayHello: React.FunctionComponent<Props> = props => {
   const { person } = props;
   return <h1>Hello {person}!</h1>;
 };
-
 ```
 
 - Let's add our first test, we want to instantiate _SayHello_ and check that we are getting an h1 that contains the name of the person that we are passing.
@@ -43,10 +42,8 @@ export const SayHello: React.FunctionComponent<Props> = props => {
 
 ```javascript
 import * as React from 'react';
-import { render, cleanup } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { SayHello } from './say-hello';
-
-afterEach(cleanup);
 
 describe('SayHello component specs', () => {
   it('should display the person name', () => {
@@ -62,40 +59,6 @@ describe('SayHello component specs', () => {
     expect(element.tagName).toEqual('H1');
   });
 });
-
-```
-
-- Create a global config to cleanup after each specs:
-
-> [Docs](https://testing-library.com/docs/react-testing-library/setup)
-> [setupFilesAfterEnv](https://jestjs.io/docs/en/configuration.html#setupfilesafterenv-array)
-
-### ./config/test/jest.json
-
-```diff
-{
-  "rootDir": "../../",
-  "preset": "ts-jest",
-- "restoreMocks": true
-+ "restoreMocks": true,
-+ "setupFilesAfterEnv": ["@testing-library/react/cleanup-after-each"]
-}
-
-```
-
-- Update spec:
-
-### ./src/say-hello.spec.tsx
-
-```diff
-import * as React from 'react';
-- import { render, cleanup } from '@testing-library/react';
-+ import { render } from '@testing-library/react';
-import { SayHello } from './say-hello';
-
-- afterEach(cleanup);
-...
-
 ```
 
 - Another approach is to use `snapshot testing`:
@@ -120,7 +83,7 @@ import { SayHello } from './say-hello';
 
 - It will add a file like:
 
-### ./src/__snapshots__/say-hello.spec.tsx.snap
+### ./src/**snapshots**/say-hello.spec.tsx.snap
 
 ```
 // Jest Snapshot v1, https://goo.gl/fbAQLP

@@ -35,8 +35,9 @@ export const usePolling = () => {
 
   return { count };
 };
-
 ```
+
+> NOTE: [useState functional updates](https://reactjs.org/docs/hooks-reference.html#functional-updates)
 
 - Let's add some specs:
 
@@ -49,14 +50,10 @@ import { usePolling } from './usePolling';
 describe('usePolling specs', () => {
   it('', () => {
     // Arrange
-
     // Act
-
     // Assert
-
   });
 });
-
 ```
 
 - should return count equals 0 when initialize the hook:

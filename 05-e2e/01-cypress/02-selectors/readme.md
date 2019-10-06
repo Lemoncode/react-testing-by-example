@@ -21,11 +21,11 @@ describe('Login specs', () => {
 - it('visit the login page', () => {
 + it('should show an alert with a message when type invalid credentials', () => {
 +   // Arrange
-    cy.visit('/');
 +   const user = 'admin';
 +   const password = '1234';
 
 +   // Act
+    cy.visit('/');
 +   cy.get(':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input').type(
 +     user
 +   );
@@ -56,17 +56,17 @@ describe('Login specs', () => {
 describe('Login specs', () => {
   it('should show an alert with a message when type invalid credentials', () => {
     // Arrange
-    cy.visit('/');
     const user = 'admin';
     const password = '1234';
+
+    // Act
+    cy.visit('/');
 +   const userInput = cy.get(
 +     ':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input'
 +   );
 +   const passwordInput = cy.get(
 +     ':nth-child(2) > .MuiInputBase-root > .MuiInputBase-input'
 +   );
-
-    // Act
 -   cy.get(':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input').type(
 -     user
 -   );
@@ -101,9 +101,11 @@ describe('Login specs', () => {
 describe('Login specs', () => {
   it('should show an alert with a message when type invalid credentials', () => {
     // Arrange
-    cy.visit('/');
     const user = 'admin';
     const password = '1234';
+
+    // Act
+    cy.visit('/');
 -   const userInput = cy.get(
 -     ':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input'
 -   );
@@ -116,8 +118,6 @@ describe('Login specs', () => {
 +   cy.get(':nth-child(2) > .MuiInputBase-root > .MuiInputBase-input').as(
 +     'passwordInput'
 +   );
-
-    // Act
 -   userInput.type(user);
 +   cy.get('@userInput').type(user);
 -   passwordInput.type(password);
@@ -143,9 +143,11 @@ describe('Login specs', () => {
 describe('Login specs', () => {
   it('should show an alert with a message when type invalid credentials', () => {
     // Arrange
-    cy.visit('/');
     const user = 'admin';
     const password = '1234';
+
+    // Act
+    cy.visit('/');
 -   cy.get(':nth-child(1) > .MuiInputBase-root > .MuiInputBase-input').as(
 -     'userInput'
 -   );
@@ -236,15 +238,15 @@ export const LoginComponent = props => {
 describe('Login specs', () => {
   it('should show an alert with a message when type invalid credentials', () => {
     // Arrange
-    cy.visit('/');
     const user = 'admin';
     const password = '1234';
-    cy.get('[data-testid=userInput]').as('userInput');
-    cy.get('[data-testid=passwordInput]').as('passwordInput');
 +   const spy = cy.spy().as('alertSpy');
 +   cy.on('window:alert', spy);
 
     // Act
+    cy.visit('/');
+    cy.get('[data-testid=userInput]').as('userInput');
+    cy.get('[data-testid=passwordInput]').as('passwordInput');
     cy.get('@userInput').type(user);
     cy.get('@passwordInput').type(password);
 +   cy.get('[data-testid=loginButton]').click();
@@ -287,13 +289,13 @@ describe('Login specs', () => {
 ...
 + it('should update header user name and navigate to hotels url when type valid credentials', () => {
 +   // Arrange
-+   cy.visit('/');
 +   const user = 'admin';
 +   const password = 'test';
-+   cy.get('[data-testid=userInput]').as('userInput');
-+   cy.get('[data-testid=passwordInput]').as('passwordInput');
 
 +   // Act
++   cy.visit('/');
++   cy.get('[data-testid=userInput]').as('userInput');
++   cy.get('[data-testid=passwordInput]').as('passwordInput');
 +   cy.get('@userInput').type(user);
 +   cy.get('@passwordInput').type(password);
 +   cy.get('[data-testid=loginButton]').click();

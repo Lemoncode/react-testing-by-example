@@ -84,6 +84,8 @@ describe('NameEdit component specs', () => {
 });
 ```
 
+> It fails because it found multiple elements
+
 - We could add a `testid` attribute to create different selectors:
 
 ### ./src/name-edit.tsx
