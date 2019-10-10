@@ -1,0 +1,15 @@
+{
+  "rootDir": "../../",
+  "preset": "ts-jest",
+  "restoreMocks": true,
+  "testMatch": ["**/*.steps.ts", "**/*.steps.tsx"],
+  "setupFilesAfterEnv": ["@testing-library/react/cleanup-after-each"],
+  "moduleNameMapper": {
+    "^common-app(.*)$": "<rootDir>/src/common-app/$1",
+    "^common(.*)$": "<rootDir>/src/common/$1",
+    "^scenes(.*)$": "<rootDir>/src/scenes/$1",
+    "^core(.*)$": "<rootDir>/src/core/$1",
+    "^layout(.*)$": "<rootDir>/src/layout/$1",
+    "^pods(.*)$": "<rootDir>/src/pods/$1"
+  }
+}
