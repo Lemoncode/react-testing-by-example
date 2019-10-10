@@ -1,6 +1,6 @@
 # 04 Selectors
 
-In this sample we are going to test Redux sagas.
+In this sample we are going to test Redux selectors.
 
 We will start from sample _03-sagas_.
 
@@ -230,12 +230,8 @@ Now we'll test `getMembersListVM` selector. It relies on `mapMemberListModelToVM
     describe('getMembersList', () => {
       ...
     });
-
-    describe('getMembersList', () => {
-      ...
-    });
 +
-+   describe('getMembersList', () => {
++   describe('getMembersListVM', () => {
 +     it('should return the expected members list from state', () => {
 +       // Arrange
 +       const state: State = {

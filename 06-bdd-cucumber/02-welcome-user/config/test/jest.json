@@ -2,7 +2,7 @@
   "rootDir": "../../",
   "preset": "ts-jest",
   "restoreMocks": true,
-  "testMatch": ["**/*.steps.ts"],
+  "testMatch": ["**/*.steps.ts", "**/*.steps.tsx"],
   "setupFilesAfterEnv": ["@testing-library/react/cleanup-after-each"],
   "moduleNameMapper": {
     "^common-app(.*)$": "<rootDir>/src/common-app/$1",

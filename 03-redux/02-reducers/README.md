@@ -204,7 +204,7 @@ Let's add the proper test when an action with type `FETCH_MEMBERS_ERROR`: it sho
   });
 ```
 
-Finally, le'll test how it behaves when an action with an arbitrary type is passed. It should return the state without modifications:
+Finally, let's test how it behaves when an action with an arbitrary type is passed. It should return the state without modifications:
 
 ### **./src/pages/members/list/reducers/members.spec.ts**
 
