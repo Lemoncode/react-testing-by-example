@@ -1,14 +1,4 @@
 import { loadFeature, defineFeature } from 'jest-cucumber';
-/*
-Feature: Custom user greet
-
-Scenario: User sets its custom greet
-  Given I am a user setting my custom greet
-  When I set the greet
-  Then the greeter should appear
-
-
-*/
 import * as React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { GreeterContainer } from '../../pods/greeter/greeter.container';
