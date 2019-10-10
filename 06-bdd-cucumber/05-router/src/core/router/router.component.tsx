@@ -6,19 +6,19 @@ import { history } from './history';
 import { switchRoutes } from './routes';
 // TODO: Import scenes to render in Route component
 // import {} from 'scenes';
+import { GreeterScene, TodosScene } from '../../scenes';
+
+console.log(switchRoutes.users);
 
 export const RouterComponent = () => (
   <ConnectedRouter history={history}>
     <Switch>
       <Route
         exact={true}
-        path={switchRoutes.list}
-        component={() => <h1>Example list component</h1>}
+        path={switchRoutes.greeter}
+        component={GreeterScene}
       />
-      <Route
-        path={switchRoutes.edit}
-        component={() => <h1>Example edit component</h1>}
-      />
+      <Route path={switchRoutes.users} component={TodosScene} />
     </Switch>
   </ConnectedRouter>
 );

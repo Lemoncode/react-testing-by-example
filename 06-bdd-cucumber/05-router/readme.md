@@ -1,235 +1,183 @@
-# 04 External Resource
+# 05 Router
 
 Let's refactor our pod and split it into multiple components
-We will start from `03-refactor`
+We will start from `04-external-resource`
 
 Summary steps:
 
-- Create a new pod todos
-- Create an api that will return user related todos
-- Develop new features using BDD
+- Refactor greeter pod
+- Create scenes
+- Add routing to our solution
+- Add scenarios when user navigates to his `todos`
 
-## 1. Let's create a new file that will host our **todos** api
-
-Let's install **axios**
-
-```bash
-npm i axios -S
-```
-
-Create _./src\pods\todos\api\todo.model.ts_
-
-```typescript
-export interface Todo {
-  id: number;
-  userId: number;
-  title: string;
-  completed: boolean;
-}
-```
-
-Create _./src\pods\todos\api\todo.api.ts_
-
-```typescript
-import Axios from 'axios';
-import { Todo } from './todo.model';
-
-const baseUrl = 'https://jsonplaceholder.typicode.com/users/';
-
-export const getUserTodos = (id: number): Promise<Todo[]> => {
-  const url = `${baseUrl}${id}/todos`;
-  return Axios.get(url).then(({ data }) => data.filter(d => d.userId === id));
-};
-```
-
-Create _./src\pods\todos\api\index.ts_
-
-```typescript
-export * from './todo.model';
-export * from './todo.api';
-```
-
-## 2. Our new feature is that users can host a TODO list in our application.
-
-Create _./src\specs\features\todos.feature_
-
-```
-Feature: User todos track
-
-Scenario: User reads its todo list
-  Given I am a user opening my todo list
-  When I open the todo list
-  Then the todo list should appear
-  Then the todo list show my todos
-
-```
-
-Create _./src\specs\step-definitions\todos.feature.steps.tsx_
-
-```tsx
-import { loadFeature, defineFeature } from 'jest-cucumber';
-
-const feature = loadFeature('./src/specs/features/todos.feature');
-
-defineFeature(feature, test => {
-  test('User reads its todo list', ({ given, when, then }) => {
-    given('I am a user opening my todo list', () => {});
-
-    when('I open the todo list', () => {});
-
-    then('the todo list should appear', () => {});
-
-    then('the todo list show my todos', () => {});
-  });
-});
-```
-
-## 3. Now we're going to implement this new feature.
-
-Let's start by creating new components
-
-Create _./src\pods\todos\viewmodels\todo.viewmodel.ts_
-
-```typescript
-export interface Todo {
-  id: number;
-  title: string;
-  completed: boolean;
-}
-```
-
-Create _./src\pods\todos\components\todo.component.tsx_
-
-```tsx
-import * as React from 'react';
-import { Todo } from '../viewmodels/todo.viewmodel';
-
-interface Props {
-  todo: Todo;
-}
-
-export const TodoComponent: React.FunctionComponent<Props> = props => {
-  const { completed, title, id } = props.todo;
-  return (
-    <li>
-      <input type="checkbox" checked={completed} />
-      <span>{title}</span>
-    </li>
-  );
-};
-```
-
-Create _./src\pods\todos\components\todos-list.component.tsx_
-
-```tsx
-import * as React from 'react';
-import { TodoComponent } from './todo.component';
-import { Todo } from '../viewmodels/todo.viewmodel';
-
-interface Props {
-  todos: Todo[];
-}
-
-export const TodosListComponent: React.FunctionComponent<Props> = props => {
-  const { todos } = props;
-
-  return (
-    <ul>
-      {todos.map(todo => (
-        <TodoComponent key={todo.id} todo={todo} />
-      ))}
-    </ul>
-  );
-};
-```
-
-## 4. We're ready to start to deal with a new container for our todos
-
-Create a new file _./src\pods\todos\mappers\index.ts_
-
-```typescript
-import * as model from '../api';
-import { Todo } from '../viewmodels/todo.viewmodel';
-
-export const mapTodoModelToTodoVM = (todos: model.Todo[]) =>
-  todos.map<Todo>(tm => tm);
-```
-
-## 5. We have every thing settle to start with our container
-
-Create _./src\pods\todos\todos.container.tsx_
-
-```typescript
-import * as React from 'react';
-import { TodosListComponent } from './components/todos-list.component';
-import { getUserTodos } from './api';
-import { mapTodoModelToTodoVM } from './mappers';
-
-export const TodosContainer: React.FunctionComponent = () => {
-  const [todos, setTodos] = React.useState([]);
-
-  React.useEffect(() => {
-    getUserTodos(1)
-      .then(todos => todos)
-      .then(todos => mapTodoModelToTodoVM(todos))
-      .then(todos => setTodos(todos));
-  }, []);
-
-  return <TodosListComponent todos={todos} />;
-};
-```
-
-## 6. Now lets implement our test
+## 1. Let's refactor greeter.container to handle navigation
 
 Modify _./src\pods\greeter\greeter.container.tsx_
 
 ```diff
-import { loadFeature, defineFeature } from 'jest-cucumber';
-+import * as React from 'react';
-+import { TodosContainer } from '../../pods/todos/todos.container';
-+import { render, waitForElement, act } from '@testing-library/react';
-+import * as api from '../../pods/todos/api/todo.api';
+import * as React from 'react';
++import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { GreetComponent } from './components/greet.component';
+import { GreetSetterComponent } from './components/greet-setter.component';
 
-const feature = loadFeature('./src/specs/features/todos.feature');
+- export const GreeterContainer: React.FunctionComponent = () => {
++const GreeterContainerPartial: React.FunctionComponent<RouteComponentProps> = (props) => {
+  const [greet, setGreet] = React.useState('');
++ const { history } = props;
++ const handleNavigation = () => {
++   history.push('');
++ };
 
-defineFeature(feature, test => {
-  test('User reads its todo list', ({given, when, then}) => {
-+   let todosContainer;
-+   let getStub;
-+   let element;
-    given('I am a user opening my todo list', () => {
-+     getStub = jest.spyOn(api, 'getUserTodos').mockImplementation(() => Promise.resolve([
-+       {
-+         id: 1,
-+         userId: 1,
-+         completed: false,
-+         title: 'test todo',
-+       }
-+     ]));
-    });
+  return (
+    <>
+      <GreetComponent greet={greet} />
+      <GreetSetterComponent greet={greet} onSetGreet={setGreet} />
++     <button onClick={handleNavigation}>navigate</button>
+    </>
+  );
+};
 
-    when('I open the todo list', () => {
-+     act(() => {
-+       todosContainer = render(<TodosContainer />);
-+     });
-    });
-
-    then('the todo list should appear', async () => {
-+     const { getByText } = todosContainer;
-+     element = await waitForElement(() => getByText('test todo'));
-+     expect(getStub).toHaveBeenCalled();
-    });
-
-    then('the todo list show my todos', () => {
-+     expect(element).not.toBeUndefined();
-    });
-  });
-});
-
++export const GreeterContainer = withRouter(GreeterContainerPartial);
 
 ```
 
-Let's give a try and run our tests.
+We left a blank space on history because we have not resolved yet.
+
+## 2. Now it's time to create our scenes. These scenes will be the route targeting.
+
+Let's begin by adding exports to pods barrel
+
+Modify _./src\pods\index.ts_
+
+```diff
++export * from './todos/todos.container';
++export * from './greeter/greeter.container';
+```
+
+Create _./src\scenes\greeter.scene.tsx_
+
+```tsx
+import * as React from 'react';
+import { GreeterContainer } from '../pods';
+
+export const GreeterScene: React.FunctionComponent = () => <GreeterContainer />;
+```
+
+Create _./src\scenes\todos.scene.tsx_
+
+```tsx
+import * as React from 'react';
+import { TodosContainer } from '../pods';
+
+export const TodosScene: React.FunctionComponent = () => <TodosContainer />;
+```
+
+Modify _./src\scenes\index.ts_
+
+```ts
+export * from './greeter.scene';
+export * from './todos.scene';
+```
+
+## 3. Now that we have our scenes, let's add them to router
+
+Edit _./src\core\router\routes.ts_
+
+```ts
+import { generatePath } from 'react-router-dom';
+
+interface BaseRoutes {
+  greeter: string;
+  users: string | ((id: number) => string);
+}
+
+const baseRoutes: BaseRoutes = {
+  greeter: '/',
+  users: '/users/:id',
+};
+
+interface SwitchRoutes extends BaseRoutes {
+  users: string;
+}
+
+export const switchRoutes: SwitchRoutes = {
+  ...baseRoutes,
+  users: baseRoutes.users as string,
+};
+
+interface LinkRoutes extends BaseRoutes {
+  users: (id: number) => string;
+}
+
+export const linkRoutes: LinkRoutes = {
+  ...baseRoutes,
+  users: id => generatePath(switchRoutes.users, { id }),
+};
+```
+
+Edit _./src\core\router\router.component.tsx_
+
+```tsx
+import * as React from 'react';
+import { Route, Switch } from 'react-router-dom';
+import { ConnectedRouter } from 'connected-react-router';
+
+import { history } from './history';
+import { switchRoutes } from './routes';
+// TODO: Import scenes to render in Route component
+// import {} from 'scenes';
+import { GreeterScene, TodosScene } from '../../scenes';
+
+console.log(switchRoutes.users);
+
+export const RouterComponent = () => (
+  <ConnectedRouter history={history}>
+    <Switch>
+      <Route
+        exact={true}
+        path={switchRoutes.greeter}
+        component={GreeterScene}
+      />
+      <Route path={switchRoutes.users} component={TodosScene} />
+    </Switch>
+  </ConnectedRouter>
+);
+```
+
+Now we can handle navigation from _greeter.container.tsx_
+
+Edit _./src\pods\greeter\greeter.container.tsx_
+
+```diff
+import * as React from 'react';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { GreetComponent } from './components/greet.component';
+import { GreetSetterComponent } from './components/greet-setter.component';
+
+const GreeterContainerPartial: React.FunctionComponent<RouteComponentProps> = (props) => {
+  const [greet, setGreet] = React.useState('');
+  const { history } = props;
+  const handleNavigation = () => {
+-    history.push('');
++    history.push('/users/1');
+  };
+
+  return (
+    <>
+      <GreetComponent greet={greet} />
+      <GreetSetterComponent greet={greet} onSetGreet={setGreet} />
+      <button onClick={handleNavigation}>navigate</button>
+    </>
+  );
+};
+
+export const GreeterContainer = withRouter(GreeterContainerPartial);
+
+```
+
+Let's run our tests. Seeems that the components that are linked to router are alreay broken.
+
+## 4. Fix broken tests.
 
 # About Basefactor + Lemoncode
 
