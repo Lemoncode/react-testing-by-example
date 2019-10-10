@@ -1,0 +1,72 @@
+{
+  "name": "06-bdd-cucumber",
+  "version": "1.0.0",
+  "description": "BDD cucumber example",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run start:dev",
+    "start:dev": "webpack-dev-server --config ./config/webpack/dev.js",
+    "start:prod": "webpack-dev-server --config ./config/webpack/prod.js",
+    "clean": "rimraf dist",
+    "build": "npm run clean && webpack --config ./config/webpack/prod.js",
+    "build:dev": "npm run clean && webpack --config ./config/webpack/dev.js",
+    "test": "jest -c ./config/test/jest.json --verbose",
+    "test:watch": "jest -c ./config/test/jest.json --verbose --watchAll -i",
+    "test:coverage": "rimraf coverage && jest -c ./config/test/jest.coverage.json --verbose -i"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@material-ui/core": "^4.3.2",
+    "@material-ui/icons": "^4.2.1",
+    "axios": "^0.19.0",
+    "connected-react-router": "^6.4.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-hot-loader": "^4.8.8",
+    "react-redux": "^7.0.3",
+    "react-router-dom": "^5.0.0",
+    "redux": "^4.0.1",
+    "redux-saga": "^1.0.2",
+    "regenerator-runtime": "^0.13.2",
+    "reselect": "^4.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "@hot-loader/react-dom": "^16.8.6",
+    "@testing-library/react": "^8.0.4",
+    "@testing-library/react-hooks": "^1.0.4",
+    "@types/deep-freeze": "^0.1.1",
+    "@types/jest": "^24.0.13",
+    "@types/react": "^16.8.18",
+    "@types/react-dom": "^16.8.4",
+    "@types/react-redux": "^7.0.9",
+    "@types/react-router-dom": "^4.3.3",
+    "@types/redux-mock-store": "^1.0.1",
+    "awesome-typescript-loader": "^5.2.1",
+    "deep-freeze": "0.0.1",
+    "dotenv-webpack": "^1.7.0",
+    "file-loader": "^4.1.0",
+    "html-webpack-plugin": "^3.2.0",
+    "husky": "^2.3.0",
+    "jest": "^24.8.0",
+    "jest-cucumber": "^2.0.11",
+    "prettier": "^1.17.1",
+    "pretty-quick": "^1.11.0",
+    "react-test-renderer": "^16.8.6",
+    "redux-mock-store": "^1.5.3",
+    "rimraf": "^2.6.3",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.3",
+    "webpack": "^4.32.2",
+    "webpack-cli": "^3.3.2",
+    "webpack-dev-server": "^3.4.1",
+    "webpack-merge": "^4.2.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  }
+}
