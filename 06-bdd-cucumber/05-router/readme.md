@@ -179,6 +179,228 @@ Let's run our tests. Seeems that the components that are linked to router are al
 
 ## 4. Fix broken tests.
 
+```diff
+import { loadFeature, defineFeature } from 'jest-cucumber';
+import * as React from 'react';
+import { render, fireEvent } from '@testing-library/react';
+-import { GreeterContainer } from '../../pods/greeter/greeter.container';
++import { history } from '../../core/router/history';
++import { Switch, Route, Router } from 'react-router-dom';
++import { TodosContainer, GreeterContainer } from 'pods';
+
+const feature = loadFeature('./src/specs/features/greeter.feature');
+
+
++const renderWithRouter = (component) => {
++  return {
++    ...render(
++      <Router history={history}>
++        <Switch>
++          <Route path="/users/:id" component={TodosContainer} />
++        </Switch>
++        {component}
++      </Router>
++    )
++  };
++};
+
+defineFeature(feature, test => {
+  test('User sets its custom greet', ({ given, when, then }) => {
+    let greeterContainer;
+    given('I am a user setting my custom greet', () => {
+-     greeterContainer = render(<GreeterContainer />);
++      greeterContainer = renderWithRouter(<GreeterContainer />);
+    });
+
+    when('I set the greet', () => {
+      const { getByTestId } = greeterContainer;
+      const greetSetter = getByTestId('greet-setter');
+      fireEvent.change(greetSetter, { target: { value: 'John' } });
+    });
+
+    then('the greeter should appear', () => {
+      const { getByTestId } = greeterContainer;
+      const greet = getByTestId('greet');
+      expect(greet.textContent).toEqual('John');
+    });
+  });
+});
+
+```
+
+Now the tests pass again. Great, let's a new scenario.
+
+## 5. Create a new scenario when user visit his **todos**
+
+Edit _./src\specs\features\greeter.feature_
+
+```diff
+Feature: Custom user greet
+
+Scenario: User sets its custom greet
+  Given I am a user setting my custom greet
+  When I set the greet
+  Then the greeter should appear
+
++Scenario: User visist his todos
++ Given I am a user with my custom greet
++ When I visit my todos
++ Then the todos list appears
+```
+
+Edit _./src\specs\step-definitions\greeter.feature.steps.tsx_
+
+```tsx
+import { loadFeature, defineFeature } from 'jest-cucumber';
+import * as React from 'react';
+import { render, fireEvent } from '@testing-library/react';
+import { history } from '../../core/router/history';
+import { Switch, Route, Router } from 'react-router-dom';
+import { TodosContainer, GreeterContainer } from 'pods';
+
+const feature = loadFeature('./src/specs/features/greeter.feature');
+
+const renderWithRouter = component => {
+  return {
+    ...render(
+      <Router history={history}>
+        <Switch>
+          <Route path="/users/:id" component={TodosContainer} />
+        </Switch>
+        {component}
+      </Router>
+    ),
+  };
+};
+
+defineFeature(feature, test => {
+  test('User sets its custom greet', ({ given, when, then }) => {
+    let greeterContainer;
+    given('I am a user setting my custom greet', () => {
+      greeterContainer = renderWithRouter(<GreeterContainer />);
+    });
+
+    when('I set the greet', () => {
+      const { getByTestId } = greeterContainer;
+      const greetSetter = getByTestId('greet-setter');
+      fireEvent.change(greetSetter, { target: { value: 'John' } });
+    });
+
+    then('the greeter should appear', () => {
+      const { getByTestId } = greeterContainer;
+      const greet = getByTestId('greet');
+      expect(greet.textContent).toEqual('John');
+    });
+  });
+  /*diff*/
+  test('User visist his todos', ({ given, when, then }) => {
+    given('I am a user with my custom greet', () => {
+      greeterContainer = renderWithRouter(<GreeterContainer />);
+    });
+
+    when('I visit my todos', () => {});
+
+    then('the todos list appears', () => {});
+  });
+  /*diff*/
+});
+```
+
+Lets modify _./src\pods\greeter\greeter.container.tsx_ to reac the button in easier way.
+
+```diff
+return (
+    <>
+      <GreetComponent greet={greet} />
+      <GreetSetterComponent greet={greet} onSetGreet={setGreet} />
+-     <button onClick={handleNavigation}>navigate</button>
++     <button data-testid="navigate" onClick={handleNavigation}>navigate</button>
+    </>
+  );
+```
+
+## 6. Ok we're ready to eidt our steps.
+
+To make easier to finf our target lets modify _./src\pods\todos\components\todos-list.component.tsx_
+
+```diff
+return (
+-   <ul>
++   <ul data-testid="todos">
+      {todos.map(todo => (
+        <TodoComponent key={todo.id} todo={todo} />
+      ))}
+    </ul>
+  );
+```
+
+With this on place we can change _./src\specs\step-definitions\greeter.feature.steps.tsx_
+
+```diff
+import { loadFeature, defineFeature } from 'jest-cucumber';
+import * as React from 'react';
+import { render, fireEvent } from '@testing-library/react';
+import { history } from '../../core/router/history';
+import { Switch, Route, Router } from 'react-router-dom';
+import { TodosContainer, GreeterContainer } from 'pods';
+
+const feature = loadFeature('./src/specs/features/greeter.feature');
+
+const renderWithRouter = (component) => {
+  return {
+    ...render(
+      <Router history={history}>
+        <Switch>
+          <Route path="/users/:id" component={TodosContainer} />
+        </Switch>
+        {component}
+      </Router>
+    )
+  };
+}
+
+defineFeature(feature, test => {
+  test('User sets its custom greet', ({ given, when, then }) => {
+    let greeterContainer;
+    given('I am a user setting my custom greet', () => {
+      greeterContainer = renderWithRouter(<GreeterContainer />);
+    });
+
+    when('I set the greet', () => {
+      const { getByTestId } = greeterContainer;
+      const greetSetter = getByTestId('greet-setter');
+      fireEvent.change(greetSetter, { target: { value: 'John' } });
+    });
+
+    then('the greeter should appear', () => {
+      const { getByTestId } = greeterContainer;
+      const greet = getByTestId('greet');
+      expect(greet.textContent).toEqual('John');
+    });
+  });
+
+  test('User visist his todos', ({ given, when, then }) => {
++    let greeterContainer;
++    given('I am a user with my custom greet', () => {
++     greeterContainer = renderWithRouter(<GreeterContainer />);
+    });
+
+    when('I visit my todos', () => {
++     const { getByTestId } = greeterContainer;
++     fireEvent.click(getByTestId('navigate'));
+    });
+
+    then('the todos list appears', () => {
++     const { getByTestId } = greeterContainer;
++     let todos = getByTestId('todos');
++     expect(todos).not.toBeUndefined();
+    });
+  });
+
+});
+
+```
+
 # About Basefactor + Lemoncode
 
 We are an innovating team of Javascript experts, passionate about turning your ideas into robust products.

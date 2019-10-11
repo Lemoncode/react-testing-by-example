@@ -10,7 +10,7 @@ export const TodosListComponent: React.FunctionComponent<Props> = props => {
   const { todos } = props;
 
   return (
-    <ul>
+    <ul data-testid="todos">
       {todos.map(todo => (
         <TodoComponent key={todo.id} todo={todo} />
       ))}

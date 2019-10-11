@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { withRouter, RouteComponentProps, Link } from 'react-router-dom';
 import { GreetComponent } from './components/greet.component';
 import { GreetSetterComponent } from './components/greet-setter.component';
 
@@ -16,7 +16,9 @@ const GreeterContainerPartial: React.FunctionComponent<
     <>
       <GreetComponent greet={greet} />
       <GreetSetterComponent greet={greet} onSetGreet={setGreet} />
-      <button onClick={handleNavigation}>navigate</button>
+      <button data-testid="navigate" onClick={handleNavigation}>
+        navigate
+      </button>
     </>
   );
 };
