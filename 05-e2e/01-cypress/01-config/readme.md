@@ -63,7 +63,7 @@ describe('Login specs', () => {
 });
 ```
 
-- An important note is that we need to running the app to execute the e2e tests:
+- An important note is that we need to run the app to execute the e2e tests:
 
 ### ./package.json
 
