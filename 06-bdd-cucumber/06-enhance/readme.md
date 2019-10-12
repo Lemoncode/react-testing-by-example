@@ -176,6 +176,152 @@ export const TodosListComponent: React.FunctionComponent<Props> = props => {
 
 ```
 
+## 2. After this little enhancement we're ready to add a new scenario to our todos feature.
+
+```diff
+Feature: User todos track
+
+Scenario: User reads its todo list
+  Given I am a user opening my todo list
+  When I open the todo list
+  Then the todo list should appear
+  Then the todo list show my todos
+
++Scenario: User updates his todo list
++  Given I am a user with my todo list
++  When I update a todo
++  Then the todo gets updated
+
+```
+
+Add the step definitions
+
+```tsx
+import { loadFeature, defineFeature } from 'jest-cucumber';
+import * as React from 'react';
+import { TodosContainer } from '../../pods/todos/todos.container';
+import { render, waitForElement, act } from '@testing-library/react';
+import * as api from '../../pods/todos/api/todo.api';
+
+const feature = loadFeature('./src/specs/features/todos.feature');
+
+defineFeature(feature, test => {
+  test('User reads its todo list', ({ given, when, then }) => {
+    let todosContainer;
+    let getStub;
+    let element;
+    given('I am a user opening my todo list', () => {
+      getStub = jest.spyOn(api, 'getUserTodos').mockImplementation(() =>
+        Promise.resolve([
+          {
+            id: 1,
+            userId: 1,
+            completed: false,
+            title: 'test todo',
+          },
+        ])
+      );
+    });
+
+    when('I open the todo list', () => {
+      act(() => {
+        todosContainer = render(<TodosContainer />);
+      });
+    });
+
+    then('the todo list should appear', async () => {
+      const { getByText } = todosContainer;
+      element = await waitForElement(() => getByText('test todo'));
+      expect(getStub).toHaveBeenCalled();
+    });
+
+    then('the todo list show my todos', () => {
+      expect(element).not.toBeUndefined();
+    });
+  });
+
+  test('User updates his todo list', ({ given, when, then }) => {
+    given('I am a user with my todo list', () => {});
+
+    when('I update a todo', () => {});
+
+    then('the todo gets updated', () => {});
+  });
+});
+```
+
+## 2. Let's implement the tests
+
+```diff
+import { loadFeature, defineFeature } from 'jest-cucumber';
+import * as React from 'react';
+import { TodosContainer } from '../../pods/todos/todos.container';
+import { render, waitForElement, act, fireEvent } from '@testing-library/react';
+import * as api from '../../pods/todos/api/todo.api';
+import { TodosListComponent } from 'pods/todos/components/todos-list.component';
+
+const feature = loadFeature('./src/specs/features/todos.feature');
+
+defineFeature(feature, test => {
+  test('User reads its todo list', ({ given, when, then }) => {
+    let todosContainer;
+    let getStub;
+    let element;
+    given('I am a user opening my todo list', () => {
+      getStub = jest.spyOn(api, 'getUserTodos').mockImplementation(() =>
+        Promise.resolve([
+          {
+            id: 1,
+            userId: 1,
+            completed: false,
+            title: 'test todo',
+          },
+        ])
+      );
+    });
+
+    when('I open the todo list', () => {
+      act(() => {
+        todosContainer = render(<TodosContainer />);
+      });
+    });
+
+    then('the todo list should appear', async () => {
+      const { getByText } = todosContainer;
+      element = await waitForElement(() => getByText('test todo'));
+      expect(getStub).toHaveBeenCalled();
+    });
+
+    then('the todo list show my todos', () => {
+      expect(element).not.toBeUndefined();
+    });
+  });
+
+  test('User updates his todo list', ({ given, when, then }) => {
++   let props;
++   let todosList;
+    given('I am a user with my todo list', () => {
++     props = {
++       todos: [ {id: 1, title: 'test todo', completed: false } ],
++       toggleTodo: jest.fn(),
++     };
+    });
+
+    when('I update a todo', () => {
++     const { getByTestId } = render(<TodosListComponent {...props}/>);
++     fireEvent.click(getByTestId('toggle-check').querySelector('input[type="checkbox"]'));
+    });
+
+    then('the todo gets updated', () => {
++     expect(props.toggleTodo).toHaveBeenCalled();
+    });
+  });
+});
+
+```
+
+The tricky part here is that we're dealing with material-ui library, and can get difficult to reach our elements.
+
 # About Basefactor + Lemoncode
 
 We are an innovating team of Javascript experts, passionate about turning your ideas into robust products.

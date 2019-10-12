@@ -2,7 +2,7 @@ import * as React from 'react';
 import { TodoComponent } from './todo.component';
 import { Todo } from '../viewmodels/todo.viewmodel';
 
-interface Props {
+export interface Props {
   todos: Todo[];
   toggleTodo: (id: number) => void;
 }

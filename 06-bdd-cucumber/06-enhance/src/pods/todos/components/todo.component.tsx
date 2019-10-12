@@ -20,7 +20,11 @@ export const TodoComponent: React.FunctionComponent<Props> = props => {
         label={title}
         labelPlacement="end"
         control={
-          <Checkbox checked={completed} onChange={toggleTodoHandler(id)} />
+          <Checkbox
+            inputProps={{ onChange: toggleTodoHandler(id) }}
+            data-testid="toggle-check"
+            checked={completed}
+          />
         }
       />
     </li>

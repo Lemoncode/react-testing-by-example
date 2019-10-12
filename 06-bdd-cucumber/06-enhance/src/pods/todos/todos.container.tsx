@@ -26,6 +26,5 @@ export const TodosContainer: React.FunctionComponent = () => {
     setTodos(updatedTodos);
   };
 
-  // return <TodosListComponent todos={todos} />;
   return <TodosListComponent toggleTodo={toggleTodo} todos={todos} />;
 };

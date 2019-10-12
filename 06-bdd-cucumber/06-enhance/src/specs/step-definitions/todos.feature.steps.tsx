@@ -1,8 +1,9 @@
 import { loadFeature, defineFeature } from 'jest-cucumber';
 import * as React from 'react';
 import { TodosContainer } from '../../pods/todos/todos.container';
-import { render, waitForElement, act } from '@testing-library/react';
+import { render, waitForElement, act, fireEvent } from '@testing-library/react';
 import * as api from '../../pods/todos/api/todo.api';
+import { TodosListComponent } from 'pods/todos/components/todos-list.component';
 
 const feature = loadFeature('./src/specs/features/todos.feature');
 
@@ -38,6 +39,28 @@ defineFeature(feature, test => {
 
     then('the todo list show my todos', () => {
       expect(element).not.toBeUndefined();
+    });
+  });
+
+  test('User updates his todo list', ({ given, when, then }) => {
+    let props;
+    let todosList;
+    given('I am a user with my todo list', () => {
+      props = {
+        todos: [{ id: 1, title: 'test todo', completed: false }],
+        toggleTodo: jest.fn(),
+      };
+    });
+
+    when('I update a todo', () => {
+      const { getByTestId } = render(<TodosListComponent {...props} />);
+      fireEvent.click(
+        getByTestId('toggle-check').querySelector('input[type="checkbox"]')
+      );
+    });
+
+    then('the todo gets updated', () => {
+      expect(props.toggleTodo).toHaveBeenCalled();
     });
   });
 });
