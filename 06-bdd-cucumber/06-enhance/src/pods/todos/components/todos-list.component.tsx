@@ -4,15 +4,16 @@ import { Todo } from '../viewmodels/todo.viewmodel';
 
 interface Props {
   todos: Todo[];
+  toggleTodo: (id: number) => void;
 }
 
 export const TodosListComponent: React.FunctionComponent<Props> = props => {
-  const { todos } = props;
+  const { todos, toggleTodo } = props;
 
   return (
-    <ul data-testid="todos">
+    <ul data-testid="todos" style={{ listStyleType: 'none' }}>
       {todos.map(todo => (
-        <TodoComponent key={todo.id} todo={todo} />
+        <TodoComponent toggleTodo={toggleTodo} key={todo.id} todo={todo} />
       ))}
     </ul>
   );

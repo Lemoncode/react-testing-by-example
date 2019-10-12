@@ -13,5 +13,19 @@ export const TodosContainer: React.FunctionComponent = () => {
       .then(todos => setTodos(todos));
   }, []);
 
-  return <TodosListComponent todos={todos} />;
+  const toggleTodo = (id: number) => {
+    const updatedTodos = todos.map(t => {
+      if (t.id !== id) {
+        return t;
+      }
+      return {
+        ...t,
+        completed: !t.completed,
+      };
+    });
+    setTodos(updatedTodos);
+  };
+
+  // return <TodosListComponent todos={todos} />;
+  return <TodosListComponent toggleTodo={toggleTodo} todos={todos} />;
 };
