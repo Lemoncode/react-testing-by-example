@@ -41,6 +41,8 @@ npm install testcafe --save-dev
 npm run test:e2e
 ```
 
+We can see that a new chrome window is open, but as no tets have been set it close immediately.
+
 - Create `tests` folder
 
 ### ./tests/login.spec.js
@@ -54,6 +56,8 @@ test('visit the login page', async t => {
 ```
 
 - An important note is that we need to running the app to execute the e2e tests:
+
+Install _npm-run-all_, this package allows to have multiple processes running at the same time from a single terminal.
 
 ### ./package.json
 

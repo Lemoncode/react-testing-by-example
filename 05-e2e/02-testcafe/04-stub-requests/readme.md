@@ -17,12 +17,10 @@ npm install
 ### ./tests/hotel-collection.spec.js
 
 ```javascript
-describe('Hotel collection specs', () => {
-  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
-    // Arrange
-    // Act
-    // Assert
-  });
+test('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
+  // Arrange
+  // Act
+  // Assert
 });
 ```
 
@@ -35,7 +33,7 @@ describe('Hotel collection specs', () => {
 
   return (
 -   <div className={classes.container}>
-+   <div className={classes.container data-testid="hotelCollectionContainer">
++   <div className={classes.container} data-testid="hotelCollectionContainer">
       {hotelCollection.map(hotel => (
 ...
 
@@ -170,20 +168,6 @@ export const getMockRequest = (url, data, statusCode) =>
 ```javascript
 export * from './hotels';
 export * from './requests';
-```
-
-### ./tests/mocks/requests.js
-
-```javascript
-import { RequestMock } from 'testcafe';
-
-export const getMockRequest = (url, data, statusCode) =>
-  RequestMock()
-    .onRequestTo(url)
-    .respond(data, statusCode, {
-      'access-control-allow-origin': '*',
-      'access-control-allow-credentials': true,
-    });
 ```
 
 - Update spec:

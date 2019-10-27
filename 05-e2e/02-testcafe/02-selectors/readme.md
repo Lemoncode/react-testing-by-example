@@ -250,7 +250,7 @@ test('should show an alert with a message when type invalid credentials', async 
   await t.expect(userInput.value).eql(user);
   await t.expect(passwordInput.value).eql(password);
 - const [alert] = await t.getNativeDialogHistory();
-+ const alert = await getAlert;
++ const alert = await getAlert();
   await t
     .expect(alert.text)
     .eql(

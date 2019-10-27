@@ -132,7 +132,7 @@ test.requestHooks(
 
 - Update `login` spec:
 
-### ./tests/hotel-edit.spec.js
+### ./tests/login.spec.js
 
 ```diff
 import { Selector, ClientFunction } from 'testcafe';
