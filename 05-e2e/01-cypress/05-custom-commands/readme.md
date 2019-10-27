@@ -48,7 +48,7 @@ describe('Hotel collection specs', () => {
 
     // Act
 -   cy.visit('#/hotels');
-    cy.loadAndVisit();
++   cy.loadAndVisit();
 
     // Assert
 -   cy.wait('@fetchHotels');
@@ -65,7 +65,7 @@ describe('Hotel collection specs', () => {
 
 ```diff
 - Cypress.Commands.add('loadAndVisit', () => {
-+ Cypress.Commands.add('loadData', () => {
++ Cypress.Commands.add('loadData', (params) => {
 + const { apiPath, fixture, fetchAlias } = params;
   cy.server();
 - cy.route('GET', 'http://localhost:3000/api/hotels', 'fixture:hotels').as(

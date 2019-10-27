@@ -35,7 +35,7 @@ describe('Hotel collection specs', () => {
 
   return (
 -   <div className={classes.container}>
-+   <div className={classes.container data-testid="hotelCollectionContainer">
++   <div className={classes.container} data-testid="hotelCollectionContainer">
       {hotelCollection.map(hotel => (
 ...
 
