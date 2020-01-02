@@ -164,7 +164,7 @@ Create _./cypress\integration\Login.feature_
 ```
 Feature: User gets access to application
 
-Scenario: User reachs login page
+Scenario: User reaches login page
   Given I am a user that reaches login page
 ```
 
