@@ -46,7 +46,7 @@ export const add = (a, b) => a + b;
 
         // Assert
 -       expect(true).toBeTruthy();
-+       expect(result).toBe(4);
++       expect(result).toEqual(4);
       });
 
 -     it('should fail spec', () => {
@@ -100,7 +100,7 @@ describe("Calculator tests", () => {
 +     const result = calculator.add(a, b, isLowerThanFive);
 
       // Assert
-      expect(result).toBe(4);
+      expect(result).toEqual(4);
     });
 
 +   it('should call to isLowerThanFive when passing A equals 2 and B equals 2', () => {
@@ -128,10 +128,9 @@ describe("Calculator tests", () => {
 ### ./src/business.ts
 
 ```javascript
-export const isLowerThanFive = (value) => {
-  console.log(`The value: ${value} is lower than 5`)
-}
-
+export const isLowerThanFive = value => {
+  console.log(`The value: ${value} is lower than 5`);
+};
 ```
 
 - Use it:
@@ -175,7 +174,7 @@ describe('Calculator tests', () => {
 +     const result = calculator.add(a, b);
 
       // Assert
-      expect(result).toBe(4)
+      expect(result).toEqual(4)
     })
 
     it('should call to isLowerThanFive when passing A equals 2 and B equals 2', () => {
@@ -286,7 +285,7 @@ describe('Calculator tests', () => {
       const result = calculator.add(a, b);
 
       // Assert
-      expect(result).toBe(4)
+      expect(result).toEqual(4)
     })
 
 -   it('should call to isLowerThanFive when passing A equals 2 and B equals 2', () => {

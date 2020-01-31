@@ -17,7 +17,7 @@ describe('Calculator tests', () => {
       const result = calculator.add(a, b);
 
       // Assert
-      expect(result).toBe(4);
+      expect(result).toEqual(4);
     });
 
     it('should call to isLowerThan when passing A equals 2 and B equals 2', () => {
