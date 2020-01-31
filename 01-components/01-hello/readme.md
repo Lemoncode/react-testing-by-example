@@ -102,6 +102,60 @@ exports[`SayHello component specs should display the person name using snapshot 
 
 - On the other hand, this could be a `bad idea` in complex scenarios due to it could be complicated review the whole snapshot and we could fall into a bad habit of updating snapshot tests blindly.
 
+- A third approach is using [jest-dom](https://github.com/testing-library/jest-dom) from testing-library. It provides a set of custom jest matchers to create declarative and clear to read expects.
+
+```bash
+npm install @testing-library/jest-dom --save-dev
+```
+
+- Configure it:
+
+### ./config/test/setup-after.ts
+
+```javascript
+import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/extend-expect';
+```
+
+- Update `jest` config:
+
+### ./config/test/jest.json
+
+```diff
+{
+  "rootDir": "../../",
+  "preset": "ts-jest",
+- "restoreMocks": true
++ "restoreMocks": true,
++ "setupFilesAfterEnv": ["<rootDir>/config/test/setup-after.ts"]
+}
+
+```
+
+> We need to setup after jest environment execution.
+
+- Now, we could write it like:
+
+### ./src/say-hello.spec.tsx
+
+```diff
+...
+
++ it('should display the person name using jest-dom', () => {
++   // Arrange
++   const person = 'John';
+
++   // Act
++   const { getByText } = render(<SayHello person={person} />);
+
++   const element = getByText('Hello John!');
+
++   // Assert
++   expect(element).toBeInTheDocument();
++ });
+
+```
+
 # About Basefactor + Lemoncode
 
 We are an innovating team of Javascript experts, passionate about turning your ideas into robust products.
