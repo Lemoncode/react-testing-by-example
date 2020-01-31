@@ -115,9 +115,65 @@ describe('NameCollection component specs', () => {
 
     // Assert
 +   expect(getStub).toHaveBeenCalled();
-+   expect(element).not.toBeUndefined();
++   expect(element).toBeInTheDocument();
   })
 });
+
+```
+
+- How to check if there is no element?
+
+### ./src/name-collection.spec.tsx
+
+```diff
+...
+  it('should display a list with one item when it mounts the component and it resolves the async call', async () => {
+    // Arrange
+    const getStub = jest
+      .spyOn(api, 'getNameCollection')
+      .mockResolvedValue(['John Doe']);
+
+    // Act
+    const { getByText } = render(<NameCollection />);
+
++   const elementBeforeWait = getByText('John Doe');
++   expect(elementBeforeWait).not.toBeInTheDocument();
+
+    const element = await waitForElement(() => getByText('John Doe'));
+
+    // Assert
+    expect(getStub).toHaveBeenCalled();
+    expect(element).toBeInTheDocument();
+  });
+
+```
+
+- If we know it could be null element, we should use `query...` instead of `get...`:
+
+### ./src/name-collection.spec.tsx
+
+```diff
+...
+  it('should display a list with one item when it mounts the component and it resolves the async call', async () => {
+    // Arrange
+    const getStub = jest
+      .spyOn(api, 'getNameCollection')
+      .mockResolvedValue(['John Doe']);
+
+    // Act
+-   const { getByText } = render(<NameCollection />);
++   const { getByText, queryByText } = render(<NameCollection />);
+
+-   const elementBeforeWait = getByText('John Doe');
++   const elementBeforeWait = queryByText('John Doe');
+    expect(elementBeforeWait).not.toBeInTheDocument();
+
+    const element = await waitForElement(() => getByText('John Doe'));
+
+    // Assert
+    expect(getStub).toHaveBeenCalled();
+    expect(element).toBeInTheDocument();
+  });
 
 ```
 
@@ -148,15 +204,18 @@ describe('NameCollection component specs', () => {
 ...
 
     // Act
--   const { getByText } = render(<NameCollection />);
+-   const { getByText, queryByText } = render(<NameCollection />);
 +   const { getAllByTestId } = render(<NameCollection />);
+
+    const elementBeforeWait = queryByText('John Doe');
+    expect(elementBeforeWait).not.toBeInTheDocument();
 
 -   const element =  await waitForElement(() => getByText('John Doe'));
 +   const elements = await waitForElement(() => getAllByTestId('name'));
 
     // Assert
     expect(getStub).toHaveBeenCalled();
--   expect(element).not.toBeUndefined();
+-   expect(element).toBeInTheDocument();
 +   expect(elements.length).toEqual(1);
 +   expect(elements[0].textContent).toEqual('John Doe');
   });

@@ -26,4 +26,17 @@ describe('SayHello component specs', () => {
     // Assert
     expect(asFragment()).toMatchSnapshot();
   });
+
+  it('should display the person name using jest-dom', () => {
+    // Arrange
+    const person = 'John';
+
+    // Act
+    const { getByText } = render(<SayHello person={person} />);
+
+    const element = getByText('Hello John!');
+
+    // Assert
+    expect(element).toBeInTheDocument();
+  });
 });
