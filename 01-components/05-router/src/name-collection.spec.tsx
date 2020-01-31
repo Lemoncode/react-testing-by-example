@@ -26,7 +26,12 @@ describe('NameCollection component specs', () => {
       .mockResolvedValue(['John Doe']);
 
     // Act
-    const { getAllByTestId } = renderWithRouter(<NameCollection />);
+    const { getAllByTestId, queryByText } = renderWithRouter(
+      <NameCollection />
+    );
+
+    const elementBeforeWait = queryByText('John Doe');
+    expect(elementBeforeWait).not.toBeInTheDocument();
 
     const elements = await waitForElement(() => getAllByTestId('name'));
 

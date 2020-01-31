@@ -139,8 +139,8 @@ describe('NameCollection component specs', () => {
     ...
 
     // Act
--   const { getAllByTestId } = render(<NameCollection />);
-+   const { getAllByTestId } = renderWithRouter(<NameCollection />);
+-   const { getAllByTestId, queryByText  } = render(<NameCollection />);
++   const { getAllByTestId, queryByText  } = renderWithRouter(<NameCollection />);
 
     ...
   });
