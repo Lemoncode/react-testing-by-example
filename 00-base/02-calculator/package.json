@@ -6,7 +6,7 @@
   "scripts": {
     "start": "webpack-dev-server --config ./config/webpack/dev.js",
     "clean": "rimraf dist",
-    "build": "npm run clean && webpack --config ./config/webpack/dev.js",
+    "build": "npm run clean && webpack --config ./config/webpack/prod.js",
     "test": "jest -c ./config/test/jest.json --verbose",
     "test:watch": "npm run test -- --watchAll -i"
   },
