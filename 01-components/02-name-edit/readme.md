@@ -85,6 +85,7 @@ describe('NameEdit component specs', () => {
 ```
 
 > It fails because it found multiple elements
+> We could try `getAllByText` too.
 
 - We could add a `testid` attribute to create different selectors:
 
