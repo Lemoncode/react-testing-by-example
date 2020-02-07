@@ -4,7 +4,6 @@ import { usePolling } from './usePolling';
 describe('usePolling specs', () => {
   it('should return count equals 0 when initialize the hook', () => {
     // Arrange
-
     // Act
     const { result } = renderHook(() => usePolling());
 
@@ -28,11 +27,11 @@ describe('usePolling specs', () => {
     // Arrange
 
     // Act
-    const { result, waitForNextUpdate } = renderHook(() => usePolling());
+    const { result, waitForValueToChange } = renderHook(() => usePolling());
 
-    await waitForNextUpdate();
-    await waitForNextUpdate();
-    await waitForNextUpdate();
+    await waitForValueToChange(() => result.current.count === 3, {
+      timeout: 3500,
+    });
 
     // Assert
     expect(result.current.count).toEqual(3);
