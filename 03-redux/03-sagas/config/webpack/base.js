@@ -11,8 +11,8 @@ module.exports = merge(
       extensions: ['.js', '.ts', '.tsx'],
     },
     entry: {
-      app: ['@babel/polyfill', './index.tsx'],
-      vendorStyles: ['../node_modules/bootstrap/dist/css/bootstrap.css'],
+      app: ['regenerator-runtime/runtime', './index.tsx'],
+      vendorStyles: ['../node_modules/bootstrap-css-only/css/bootstrap.css'],
     },
     module: {
       rules: [
