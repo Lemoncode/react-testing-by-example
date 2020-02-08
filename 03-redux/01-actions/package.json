@@ -8,7 +8,7 @@
     "prebuild": "rimraf dist",
     "build": "webpack --config ./config/webpack/prod.js",
     "test": "jest -c ./config/test/jest.json --verbose",
-    "test:watch": "jest -c ./config/test/jest.json --verbose --watchAll -i"
+    "test:watch": "npm run test -- --watchAll -i"
   },
   "author": "Lemoncode",
   "repository": "https://github.com/Lemoncode/react-testing-by-example",
