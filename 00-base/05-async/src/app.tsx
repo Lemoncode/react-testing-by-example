@@ -9,7 +9,7 @@ export const App: React.FunctionComponent = () => {
         console.log(mapToMemberVMList(members));
       })
       .catch(error => console.log(error));
-  });
+  }, []);
 
   return <h1>React testing by sample</h1>;
 };

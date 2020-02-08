@@ -111,7 +111,7 @@ describe('useName specs', () => {
 
 ```diff
 - import { renderHook } from '@testing-library/react-hooks';
-+ import { renderHook } from '@testing-library/react-hooks';
++ import { renderHook, act } from '@testing-library/react-hooks';
 import { useName } from './useName';
 
 ...

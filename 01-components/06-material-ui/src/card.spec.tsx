@@ -18,8 +18,8 @@ describe('Card component specs', () => {
     const bodyElement = getByText(props.body);
 
     // Assert
-    expect(titleElement).not.toBeUndefined();
-    expect(bodyElement).not.toBeUndefined();
+    expect(titleElement).toBeInTheDocument();
+    expect(bodyElement).toBeInTheDocument();
   });
 
   it('should call onClick property when it clicks on "Learn more" button', () => {

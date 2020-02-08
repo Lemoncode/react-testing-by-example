@@ -33,10 +33,12 @@ describe('pages/members/list/reducers/members reducer tests', () => {
       type: actionIds.FETCH_MEMBERS_SUCCESS,
       payload: members,
     };
-    const initialState: MembersState = deepFreeze({
+    const initialState: MembersState = {
       members: [],
       serverError: 'test error',
-    });
+    };
+
+    deepFreeze(initialState);
 
     // Act
     const result = membersReducer(initialState, action);
@@ -52,10 +54,12 @@ describe('pages/members/list/reducers/members reducer tests', () => {
       type: actionIds.FETCH_MEMBERS_ERROR,
       payload: 'test error',
     };
-    const initialState: MembersState = deepFreeze({
+    const initialState: MembersState = {
       members: [],
       serverError: null,
-    });
+    };
+
+    deepFreeze(initialState);
 
     // Act
     const result = membersReducer(initialState, action);
@@ -71,10 +75,12 @@ describe('pages/members/list/reducers/members reducer tests', () => {
       type: 'foo',
       payload: null,
     };
-    const initialState: MembersState = deepFreeze({
+    const initialState: MembersState = {
       members: [],
       serverError: null,
-    });
+    };
+
+    deepFreeze(initialState);
 
     // Act
     const result = membersReducer(initialState, action as MembersAction);

@@ -26,11 +26,14 @@ describe('NameCollection component specs', () => {
       .mockResolvedValue(['John Doe']);
 
     // Act
-    const { getAllByTestId } = renderWithRouter(<NameCollection />);
+    const { getAllByTestId, queryByText } = renderWithRouter(
+      <NameCollection />
+    );
 
-    await waitForElement(() => getAllByTestId('name'));
+    const elementBeforeWait = queryByText('John Doe');
+    expect(elementBeforeWait).not.toBeInTheDocument();
 
-    const elements = getAllByTestId('name');
+    const elements = await waitForElement(() => getAllByTestId('name'));
 
     // Assert
     expect(getStub).toHaveBeenCalled();
@@ -47,9 +50,7 @@ describe('NameCollection component specs', () => {
     // Act
     const { getAllByTestId } = renderWithRouter(<NameCollection />);
 
-    await waitForElement(() => getAllByTestId('name'));
-
-    const elements = getAllByTestId('name');
+    const elements = await waitForElement(() => getAllByTestId('name'));
 
     // Assert
     expect(getStub).toHaveBeenCalled();
@@ -69,9 +70,9 @@ describe('NameCollection component specs', () => {
       <NameCollection />
     );
 
-    await waitForElement(() => getAllByTestId('name'));
+    const elements = await waitForElement(() => getAllByTestId('name'));
 
-    const secondUser = getByText('Jane Doe');
+    const secondUser = elements[1];
     fireEvent.click(secondUser);
 
     const userEditElement = getByTestId('user-edit');

@@ -78,9 +78,6 @@ describe('useUser specs', () => {
 
 ```
 
-> In this case we cannot use `act` due to it's an internal code which it updating the state.
-> [More info](https://react-hooks-testing-library.com/usage/advanced-hooks#async)
-
 - Update second spec:
 
 ### ./src/useUser.spec.ts

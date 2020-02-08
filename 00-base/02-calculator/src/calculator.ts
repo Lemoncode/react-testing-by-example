@@ -1,4 +1,4 @@
-import { isLowerThan, max } from './business'
+import { isLowerThan, max } from './business';
 
 export const add = (a, b) => {
   const result = a + b;

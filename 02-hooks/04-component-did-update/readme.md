@@ -23,7 +23,6 @@ const url = 'https://jsonplaceholder.typicode.com/users?name_like=';
 
 export const getUsersByFilter = filter =>
   Axios.get(`${url}${filter}`).then(({ data }) => data);
-
 ```
 
 - We will create a new custom hook:
@@ -49,7 +48,6 @@ export const useFilterUsers = initialFilter => {
     setFilter,
   };
 };
-
 ```
 
 - Let's add some specs:
@@ -64,14 +62,10 @@ import { useFilterUsers } from './useFilterUsers';
 describe('useFilterUsers specs', () => {
   it('', () => {
     // Arrange
-
     // Act
-
     // Assert
-
   });
 });
-
 ```
 
 - should call getUsersByFilter and update users when it feeds filter equals "doe":
@@ -130,7 +124,7 @@ describe('useFilterUsers specs', () => {
 +   // Assert
 +   expect(result.current.users).toEqual([]);
 
-+   renderHook(() => result.current.setFilter('doe'));
++   act(() => result.current.setFilter(filter));
 +   await waitForNextUpdate();
 
 +   expect(getUsersByFilterSpy).toHaveBeenCalledWith('doe');
@@ -160,7 +154,7 @@ describe('useFilterUsers specs', () => {
 +   // Assert
 +   expect(result.current.users).toEqual([]);
 
-+   renderHook(() => result.current.setFilter('smith'));
++   act(() => result.current.setFilter('smith'));
 +   await waitForNextUpdate();
 
 +   expect(getUsersByFilterSpy).toHaveBeenCalledWith('doe');

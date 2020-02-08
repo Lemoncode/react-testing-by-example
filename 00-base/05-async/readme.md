@@ -63,7 +63,7 @@ export const App: React.FunctionComponent = () => {
 -     });
 +     })
 +     .catch(error => console.log(error));
-  });
+  }, []);
 
   return <h1>React testing by sample</h1>;
 };
@@ -80,13 +80,10 @@ import { getMembers } from './api';
 describe('api specs', () => {
   it('', () => {
     // Arrange
-
     // Act
-
     // Assert
   });
 });
-
 ```
 
 - should return members when it resolves the request successfully:

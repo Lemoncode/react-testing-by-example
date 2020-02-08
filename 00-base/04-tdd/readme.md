@@ -38,7 +38,6 @@ const url = 'https://api.github.com/orgs/lemoncode/members';
 
 export const getMembers = (): Promise<Member[]> =>
   Axios.get(url).then(({ data }) => data);
-
 ```
 
 - Let's use it:
@@ -73,7 +72,7 @@ npm start
 
 ```javascript
 export interface Member {
-  id: number;
+  id: string;
   login: string;
   avatarUrl: string;
 }
@@ -128,7 +127,6 @@ import * as viewModel from './view-model';
 export const mapToMemberVMList = (
   members: apiModel.Member[]
 ): viewModel.Member[] => [];
-
 ```
 
 - Let's update the spec:
@@ -199,6 +197,9 @@ import * as viewModel from './view-model';
 +   ];
 
 +   // Act
++   const result: viewModel.Member[] = mapToMemberVMList(members);
+
++   // Assert
 +   const expectedResult: viewModel.Member[] = [
 +     {
 +       id: '1',
@@ -307,7 +308,6 @@ export const App: React.FunctionComponent = () => {
 };
 
 ```
-
 
 # About Basefactor + Lemoncode
 

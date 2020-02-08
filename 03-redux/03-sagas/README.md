@@ -96,7 +96,7 @@ Let's start with the case when the API call is successful and return a members l
     });
 +
 +   describe('fetchMembersSaga', () => {
-+     it('should put fetchMembersSuccess with givne members when API call is succesful', () => {
++     it('should put fetchMembersSuccess with given members when API call is succesful', () => {
 +       // Arrange
 +       const fetchMembersRequest: FetchMembersRequestAction = {
 +         type: actionIds.FETCH_MEMBERS_REQUEST,
@@ -158,14 +158,16 @@ We'll explore another way to test sagas. This approximation can be used only whe
 ### **./src/common/test/getDispatchedActionsFromSaga.ts**
 
 ```ts
-import { runSaga } from 'redux-saga';
+import { runSaga, Saga } from 'redux-saga';
+import { BaseAction } from '../types';
 
-export async function getDispatchedActionsFromSaga(saga, initialAction) {
+export async function getDispatchedActionsFromSaga<S>(saga: Saga, initialAction: BaseAction, state?: S) {
   const dispatchedActions = [];
 
   await runSaga(
     {
       dispatch: (action) => dispatchedActions.push(action),
+      getState: () => state,
     },
     saga,
     initialAction
@@ -180,7 +182,7 @@ Let's add a barrel for our `test` folder:
 ### **./src/common/test/index.ts**
 
 ```ts
-export { getDispatchedActionsFromSaga } from './getDispatchedActionsFromSaga';
+export * from './getDispatchedActionsFromSaga';
 ```
 
 Since using this approximation the saga will be launched as in real app we need to mock the API call.
@@ -191,9 +193,9 @@ Since using this approximation the saga will be launched as in real app we need 
   import { call, put, takeLatest } from 'redux-saga/effects';
 + import { getDispatchedActionsFromSaga } from '../../../../common/test';
 + import * as api from '../../../../rest-api/api/member';
-+ import { fetchMembers } from '../../../../rest-api/api/member';
+- import { fetchMembers } from '../../../../rest-api/api/member';
   import { Member } from '../../../../rest-api/model';
-  import { MembersAction } from '../actions';
++ import { MembersAction } from '../actions';
   import { actionIds } from '../actions/actionIds';
   import { fetchMembersError, FetchMembersRequestAction, fetchMembersSuccess } from '../actions/fetchMembers';
   import { fetchMembersSaga, watchFetchMembersRequest } from './fetchMembersSaga';

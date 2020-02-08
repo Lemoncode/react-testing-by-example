@@ -13,7 +13,7 @@ export const LanguageContext = React.createContext<Context>({
 });
 
 export const LanguageProvider: React.FunctionComponent = props => {
-  const [language, setLanguage] = React.useState('spanish');
+  const [language, setLanguage] = React.useState('es');
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage }}>

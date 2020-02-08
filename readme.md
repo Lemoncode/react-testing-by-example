@@ -8,6 +8,8 @@ As summary, we will need install these dependencies to test it:
 
 ```bash
 npm install jest @types/jest ts-jest @testing-library/react @testing-library/react-hooks react-test-renderer --save-dev
+
+npm install deep-freeze --save-dev
 ```
 
 # About Basefactor + Lemoncode

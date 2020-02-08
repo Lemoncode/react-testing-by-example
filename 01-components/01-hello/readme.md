@@ -34,7 +34,6 @@ export const SayHello: React.FunctionComponent<Props> = props => {
   const { person } = props;
   return <h1>Hello {person}!</h1>;
 };
-
 ```
 
 - Let's add our first test, we want to instantiate _SayHello_ and check that we are getting an h1 that contains the name of the person that we are passing.
@@ -43,10 +42,8 @@ export const SayHello: React.FunctionComponent<Props> = props => {
 
 ```javascript
 import * as React from 'react';
-import { render, cleanup } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { SayHello } from './say-hello';
-
-afterEach(cleanup);
 
 describe('SayHello component specs', () => {
   it('should display the person name', () => {
@@ -62,40 +59,6 @@ describe('SayHello component specs', () => {
     expect(element.tagName).toEqual('H1');
   });
 });
-
-```
-
-- Create a global config to cleanup after each specs:
-
-> [Docs](https://testing-library.com/docs/react-testing-library/setup)
-> [setupFilesAfterEnv](https://jestjs.io/docs/en/configuration.html#setupfilesafterenv-array)
-
-### ./config/test/jest.json
-
-```diff
-{
-  "rootDir": "../../",
-  "preset": "ts-jest",
-- "restoreMocks": true
-+ "restoreMocks": true,
-+ "setupFilesAfterEnv": ["@testing-library/react/cleanup-after-each"]
-}
-
-```
-
-- Update spec:
-
-### ./src/say-hello.spec.tsx
-
-```diff
-import * as React from 'react';
-- import { render, cleanup } from '@testing-library/react';
-+ import { render } from '@testing-library/react';
-import { SayHello } from './say-hello';
-
-- afterEach(cleanup);
-...
-
 ```
 
 - Another approach is to use `snapshot testing`:
@@ -120,7 +83,7 @@ import { SayHello } from './say-hello';
 
 - It will add a file like:
 
-### ./src/__snapshots__/say-hello.spec.tsx.snap
+### ./src/**snapshots**/say-hello.spec.tsx.snap
 
 ```
 // Jest Snapshot v1, https://goo.gl/fbAQLP
@@ -138,6 +101,60 @@ exports[`SayHello component specs should display the person name using snapshot 
 - This kind of tests are useful when we want to make sure the UI does not change. The snapshot should be committed to be reviewed as part of the pull request.
 
 - On the other hand, this could be a `bad idea` in complex scenarios due to it could be complicated review the whole snapshot and we could fall into a bad habit of updating snapshot tests blindly.
+
+- A third approach is using [jest-dom](https://github.com/testing-library/jest-dom) from testing-library. It provides a set of custom jest matchers to create declarative and clear to read expects.
+
+```bash
+npm install @testing-library/jest-dom --save-dev
+```
+
+- Configure it:
+
+### ./config/test/setup-after.ts
+
+```javascript
+import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/extend-expect';
+```
+
+- Update `jest` config:
+
+### ./config/test/jest.json
+
+```diff
+{
+  "rootDir": "../../",
+  "preset": "ts-jest",
+- "restoreMocks": true
++ "restoreMocks": true,
++ "setupFilesAfterEnv": ["<rootDir>/config/test/setup-after.ts"]
+}
+
+```
+
+> We need to setup after jest environment execution.
+
+- Now, we could write it like:
+
+### ./src/say-hello.spec.tsx
+
+```diff
+...
+
++ it('should display the person name using jest-dom', () => {
++   // Arrange
++   const person = 'John';
+
++   // Act
++   const { getByText } = render(<SayHello person={person} />);
+
++   const element = getByText('Hello John!');
+
++   // Assert
++   expect(element).toBeInTheDocument();
++ });
+
+```
 
 # About Basefactor + Lemoncode
 

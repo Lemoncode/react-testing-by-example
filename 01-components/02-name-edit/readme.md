@@ -35,7 +35,6 @@ export const NameEdit: React.FunctionComponent = () => {
     </>
   );
 };
-
 ```
 
 - Let's instantiate this component in our app.
@@ -56,6 +55,7 @@ export const App: React.FunctionComponent = props => (
 ```
 
 - Let's start implementing a test, the scenario we want to test:
+
   - Render the _NameEdit_ component.
   - Get the input element.
   - Trigger an update over that input.
@@ -80,11 +80,12 @@ describe('NameEdit component specs', () => {
     const labelElement = getByText('');
 
     // Assert
-
   });
 });
-
 ```
+
+> It fails because it found multiple elements
+> We could try `getAllByText` too.
 
 - We could add a `testid` attribute to create different selectors:
 
@@ -124,7 +125,8 @@ describe('NameEdit component specs', () => {
     // Arrange
 
     // Act
-    const { getByText } = render(<NameEdit />);
+-   const { getByText } = render(<NameEdit />);
++   const { getByTestId } = render(<NameEdit />);
 
 -   const labelElement = getByText('');
 +   const labelElement = getByTestId('userName-label');

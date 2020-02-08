@@ -33,7 +33,6 @@ npm install jest @types/jest ts-jest --save-dev
 
 # Config
 
-
 - Jest test commands:
   - `npm test`: to single run
   - `npm run test:watch`: to run all specs after changes.
@@ -60,7 +59,7 @@ npm install jest @types/jest ts-jest --save-dev
 -   "build": "npm run clean && webpack --config ./config/webpack/prod.js"
 +   "build": "npm run clean && webpack --config ./config/webpack/prod.js",
 +   "test": "jest --verbose",
-+   "test:watch": "jest --verbose --watchAll -i"
++   "test:watch": "npm run test -- --watchAll -i"
   },
   ...
 }
@@ -83,6 +82,7 @@ npm install jest @types/jest ts-jest --save-dev
 - Finally we are going to automatically restore mock state between every test:
 
 ### ./package.json
+
 ```diff
 {
   ...
@@ -119,7 +119,6 @@ describe('dummy specs', () => {
     expect(true).toBeTruthy();
   });
 });
-
 ```
 
 - Adding failed spec:
@@ -175,7 +174,6 @@ describe('dummy specs', () => {
   "preset": "ts-jest",
   "restoreMocks": true
 }
-
 ```
 
 - We only need a detail to keep working with this Jest config, we need to use `rootDir`:
@@ -193,6 +191,7 @@ describe('dummy specs', () => {
 - And use that file:
 
 ### ./package.json
+
 ```diff
 {
   ...
@@ -200,8 +199,7 @@ describe('dummy specs', () => {
     ...
 -   "test": "jest --verbose",
 +   "test": "jest -c ./config/test/jest.json --verbose",
--   "test:watch": "jest --verbose --watchAll -i"
-+   "test:watch": "jest -c ./config/test/jest.json --verbose --watchAll -i"
+    "test:watch": "npm run test -- --watchAll -i"
   },
   ...
 }
@@ -212,7 +210,6 @@ describe('dummy specs', () => {
 ```bash
 npm run test:watch
 ```
-
 
 # About Basefactor + Lemoncode
 

@@ -24,14 +24,11 @@ interface ParamProps {
   name: string;
 }
 
-interface Props extends RouteComponentProps<ParamProps> {
-
-}
+interface Props extends RouteComponentProps<ParamProps> {}
 
 export const UserEdit: React.FunctionComponent<Props> = props => {
   return <h1>User name: {props.match.params.name}</h1>;
 };
-
 ```
 
 - Create `router`:
@@ -54,7 +51,6 @@ export const Router: React.FunctionComponent = () => {
     </HashRouter>
   );
 };
-
 ```
 
 - Use it:
@@ -91,9 +87,9 @@ import { getNameCollection } from './name-api';
 
   return (
     <ul>
-      {nameCollection.map((name, index) => (
-+       <Link key={index} to={`/users/${name}`}>
--         <li key={index} data-testid="name">
+      {nameCollection.map(name => (
++       <Link key={name} to={`/users/${name}`}>
+-         <li key={name} data-testid="name">
 -           {name}
 -         </li>
 +         <li data-testid="name">{name}</li>
@@ -143,8 +139,8 @@ describe('NameCollection component specs', () => {
     ...
 
     // Act
--   const { getAllByTestId } = render(<NameCollection />);
-+   const { getAllByTestId } = renderWithRouter(<NameCollection />);
+-   const { getAllByTestId, queryByText  } = render(<NameCollection />);
++   const { getAllByTestId, queryByText  } = renderWithRouter(<NameCollection />);
 
     ...
   });
@@ -187,9 +183,9 @@ import { NameCollection } from './name-collection';
 +     <NameCollection />
 +   );
 
-+   await waitForElement(() => getAllByTestId('name'));
++   const elements = await waitForElement(() => getAllByTestId('name'));
 
-+   const secondUser = getByText('Jane Doe');
++   const secondUser = elements[1];
 +   fireEvent.click(secondUser);
 
 +   const userEditElement = getByTestId('user-edit');

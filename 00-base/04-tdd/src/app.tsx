@@ -7,7 +7,7 @@ export const App: React.FunctionComponent = () => {
     getMembers().then(members => {
       console.log(mapToMemberVMList(members));
     });
-  });
+  }, []);
 
   return <h1>React testing by sample</h1>;
 };

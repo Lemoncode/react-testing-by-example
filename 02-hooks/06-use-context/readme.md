@@ -142,7 +142,7 @@ describe('useLanguage specs', () => {
 -   const { result } = renderHook(() => useLanguage());
 +   const { result } = renderHook(() => useLanguage(), { wrapper: provider });
 
--   result.current.setLanguage('es');
+    result.current.setLanguage('es');
 
     // Assert
     expect(result.current.message).toEqual('The current language is: es');

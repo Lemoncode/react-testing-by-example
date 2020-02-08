@@ -220,7 +220,7 @@ Now we'll test `getMembersListVM` selector. It relies on `mapMemberListModelToVM
 + import * as mappers from './mappers';
 - import { getMembersList, getMembersState } from './selectors';
 + import { getMembersList, getMembersListVM, getMembersState } from './selectors';
-  import { Member } from './viewModel';
++ import { Member } from './viewModel';
 
   describe('pages/members/list/selectors', () => {
     describe('getMembersState', () => {

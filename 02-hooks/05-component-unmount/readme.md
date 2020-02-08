@@ -35,8 +35,9 @@ export const usePolling = () => {
 
   return { count };
 };
-
 ```
+
+> NOTE: [useState functional updates](https://reactjs.org/docs/hooks-reference.html#functional-updates)
 
 - Let's add some specs:
 
@@ -49,14 +50,10 @@ import { usePolling } from './usePolling';
 describe('usePolling specs', () => {
   it('', () => {
     // Arrange
-
     // Act
-
     // Assert
-
   });
 });
-
 ```
 
 - should return count equals 0 when initialize the hook:
@@ -123,6 +120,55 @@ describe('usePolling specs', () => {
 + });
 
 ```
+
+- Could we wait until value is three?:
+
+### ./src/usePolling.spec.ts
+
+```diff
+...
+  it('should return count equals 3 when it waits 3 times for next update', async () => {
+    // Arrange
+
+    // Act
+-   const { result, waitForNextUpdate } = renderHook(() => usePolling());
++   const { result, waitForValueToChange } = renderHook(() => usePolling());
+
+-   await waitForNextUpdate();
+-   await waitForNextUpdate();
+-   await waitForNextUpdate();
++   await waitForValueToChange(() => result.current.count === 3);
+
+    // Assert
+    expect(result.current.count).toEqual(3);
+  });
+
+```
+
+- We can play with [wait options](https://react-hooks-testing-library.com/reference/api#wait-options) too:
+
+### ./src/usePolling.spec.ts
+
+```diff
+...
+  it('should return count equals 3 when it waits 3 times for next update', async () => {
+    // Arrange
+
+    // Act
+    const { result, waitForValueToChange } = renderHook(() => usePolling());
+
+-   await waitForValueToChange(() => result.current.count === 3);
++   await waitForValueToChange(() => result.current.count === 3, {
++     timeout: 3500,
++   });
+
+    // Assert
+    expect(result.current.count).toEqual(3);
+  });
+
+```
+
+> NOTE: Try with `2000` ms
 
 - should call clearInterval when it unmounts the component:
 

@@ -55,7 +55,6 @@ export const CardComponent: React.FunctionComponent<Props> = props => {
     </Card>
   );
 };
-
 ```
 
 - Let's add some specs:
@@ -70,14 +69,10 @@ import { CardComponent } from './card';
 describe('Card component specs', () => {
   it('', () => {
     // Arrange
-
     // Act
-
     // Assert
-
   });
 });
-
 ```
 
 - should display a card with title and body when it feeds a title and body:
@@ -106,8 +101,8 @@ describe('Card component specs', () => {
 +   const bodyElement = getByText(props.body);
 
     // Assert
-+   expect(titleElement).not.toBeUndefined();
-+   expect(bodyElement).not.toBeUndefined();
++   expect(titleElement).toBeInTheDocument();
++   expect(bodyElement).toBeInTheDocument();
   });
 });
 
