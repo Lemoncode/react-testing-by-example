@@ -25,10 +25,10 @@ To get an up and working code coverage a simple script can be added to package.j
     "prebuild": "rimraf dist",
     "build": "webpack --config ./config/webpack/prod.js",
     "test": "jest -c ./config/test/jest.json --verbose",
--   "test:watch": "jest -c ./config/test/jest.json --verbose --watchAll -i"
-+   "test:watch": "jest -c ./config/test/jest.json --verbose --watchAll -i",
+-   "test:watch": "npm run test -- --watchAll -i"
++   "test:watch": "npm run test -- --watchAll -i",
 +   "pretest:coverage": "rimraf coverage",
-+   "test:coverage": "jest -c ./config/test/jest.json --verbose --coverage"
++   "test:coverage": "npm run test -- --coverage"
   },
 ```
 
@@ -40,7 +40,7 @@ Let's see how this new command is working. Execute:
 npm run test:coverage
 ```
 
-> NOTE: [Jest default coverage reporters](https://jestjs.io/docs/en/configuration#coveragereporters-array-string)
+> NOTE: [Jest default coverage reporters](https://jestjs.io/docs/en/configuration#coveragereporters-arraystring)
 
 You'll note two things. First of all, we get a nice formatted table with a coverage summary from all executed tests and tested components.
 
@@ -87,7 +87,7 @@ Let's update coverage command inside `package.json` to point this new config and
   "test:watch": "jest -c ./config/test/jest.json --verbose --watchAll -i",
   "pretest:coverage": "rimraf coverage",
 - "test:coverage": "jest -c ./config/test/jest.json --verbose --coverage"
-+ "test:coverage": "rimraf coverage && jest -c ./config/test/jest.coverage.json --verbose",
++ "test:coverage": "jest -c ./config/test/jest.coverage.json",
 ```
 
 Let's play with some different reporting options. Add `coverageReporters` section as an array of strings in `jest.coverage.json`:
