@@ -86,7 +86,7 @@ Let's update coverage command inside `package.json` to point this new config and
   "test": "jest -c ./config/test/jest.json --verbose",
   "test:watch": "jest -c ./config/test/jest.json --verbose --watchAll -i",
   "pretest:coverage": "rimraf coverage",
-- "test:coverage": "jest -c ./config/test/jest.json --verbose --coverage"
+- "test:coverage": "npm run test -- --coverage"
 + "test:coverage": "jest -c ./config/test/jest.coverage.json",
 ```
 
