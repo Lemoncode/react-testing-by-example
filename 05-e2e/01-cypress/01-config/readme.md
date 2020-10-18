@@ -29,7 +29,6 @@ npm install cypress --save-dev
 ```diff
 "scripts": {
 ...
-    "build:dev": "npm run clean && webpack --config ./config/webpack/dev.js",
     "postinstall": "cd ./server && npm install",
 +   "test:e2e": "cypress open"
   },
@@ -41,7 +40,7 @@ npm install cypress --save-dev
 npm run test:e2e
 ```
 
-- Cypress creates for us a folder `cypress` witn some other ones inside:
+- Cypress creates for us a folder `cypress` and `cypress.json`:
 
   - **fixtures**
   - **integration**
@@ -71,7 +70,7 @@ describe('Login specs', () => {
 "scripts": {
 ...
 -   "test:e2e": "cypress open"
-+   "test:e2e": "npm-run-all -p -l start:dev start:e2e",
++   "test:e2e": "npm run start -- start:e2e",
 +   "start:e2e": "cypress open"
   },
 ```
@@ -80,10 +79,11 @@ describe('Login specs', () => {
 
 ### ./cypress.json
 
-```json
-{
-  "baseUrl": "http://localhost:8080"
-}
+```diff
+- {}
++ {
++   "baseUrl": "http://localhost:8080"
++ }
 ```
 
 > You can see more info [here](https://docs.cypress.io/guides/references/configuration.html#Options)
@@ -96,6 +96,53 @@ describe('Login specs', () => {
 -   cy.visit('http://localhost:8080');
 +   cy.visit('/');
   });
+});
+
+```
+
+- Could we work with Typescript? If we rename spec to `.ts`:
+
+_./cypress/integration/login.spec.js_ -> _./cypress/integration/login.spec.ts_
+
+- Let's add a `tsconfig.json` file to support it:
+
+### ./cypress/tsconfig.json
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "baseUrl": "../node_modules",
+    "target": "es5",
+    "lib": ["es5", "dom"],
+    "types": ["cypress"]
+  },
+  "include": ["**/*.ts"]
+}
+```
+
+> You can see more info [here](https://docs.cypress.io/guides/tooling/typescript-support.html#Install-TypeScript)
+
+- Now it's fully supported. Let's try another spec:
+
+### ./cypress/integration/login.spec.ts
+
+```diff
+describe('Login specs', () => {
+  it('visit the login page', () => {
+    cy.visit('/');
+  });
+
++ it('should name input has the focus when it clicks on it', () => {
++   // Arrange
+
++   // Act
++   cy.visit('/');
++   cy.get('input[name="name"]').click();
+
++   // Assert
++   cy.get('input[name="name"]').should('have.focus');
++ });
 });
 
 ```

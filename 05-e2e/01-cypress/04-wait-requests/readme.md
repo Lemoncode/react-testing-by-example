@@ -12,119 +12,101 @@ We will start from `03-stub-requests`.
 npm install
 ```
 
-- Maybe some times we need to use real backend server for some reason, (but it could be a bad practice, for example in ci process):
+- Maybe some times we need to use real backend server for some reason, we have a spec check hotel collection from "real backend" (it's a mock backend). It looks like it's working, but what's happend if we add some delay?:
 
-### ./src/package.json
-
-```diff
-"scripts": {
-..
--   "test:e2e": "npm-run-all -p -l start:dev start:e2e",
-+   "test:e2e": "npm-run-all -p -l start start:e2e",
-    "start:e2e": "cypress open"
-  },
-```
-
-- Add spec with real api request:
-
-### ./cypress/integration/hotel-collection.spec.js
-
-```diff
-...
-+ it('should fetch hotel collection from backend and show it in screen when visit /hotels urls', () => {
-+   // Arrange
-
-+   // Act
-+   cy.visit('#/hotels');
-
-+   // Assert
-+   cy.get('[data-testid="hotelCollectionContainer"]')
-+     .children()
-+     .should('have.length', 10);
-+ });
-
-```
-
-- It looks like it's working, but what's happend if we add some delay?:
-
-### ./src/pods/hotel-collection/hotel-collection.api.js
+### ./src/pods/hotel-collection/hotel-collection.api.ts
 
 ```diff
 import Axios from 'axios';
+import { HotelEntityApi } from './hotel-collection.api-model';
 
-const url = `${process.env.BASE_API_URL}/api/hotels`;
+const url = '/api/hotels';
 
-- export const fetchHotelCollection = () =>
--   Axios.get(url).then(({ data }) => data);
-+ export const fetchHotelCollection = () => {
-+   const promise = new Promise(resolve => {
-+     Axios.get(url).then(({ data }) => setTimeout(() => resolve(data), 4000));
-+   });
+export const getHotelCollection = async (): Promise<HotelEntityApi[]> => {
+- const { data } = await Axios.get<HotelEntityApi[]>(url);
+- return data;
++ const promise = new Promise<HotelEntityApi[]>((resolve) => {
++   Axios.get(url).then(({ data }) => setTimeout(() => resolve(data), 4000));
++ });
 
-+   return promise;
-+ };
++ return promise;
+};
+
 ```
 
 - Now, it's failing due to cypress timeout, so we need to refactor it:
 
-### ./cypress/integration/hotel-collection.spec.js
+### ./cypress/integration/hotel-collection.spec.ts
 
 ```diff
-describe('Hotel collection specs', () => {
-  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
+  it('should fetch two hotels when visit /hotel-collection url', () => {
     // Arrange
-    cy.server();
--   cy.route('GET', 'http://localhost:3000/api/hotels', 'fixture:hotels');
-+   cy.route('GET', 'http://localhost:3000/api/hotels', 'fixture:hotels').as(
-+     'fetchHotels'
-+   );
+    cy.server(); // Start the server to change request behaviour
+-   cy.route('GET', '/api/hotels', 'fixture:hotels');
++   cy.route('GET', '/api/hotels', 'fixture:hotels').as('fetchHotels');
 
     // Act
-    cy.visit('#/hotels');
+    cy.visit('/hotel-collection');
 
     // Assert
 +   cy.wait('@fetchHotels');
-    cy.get('[data-testid="hotelCollectionContainer"]')
-      .children()
-      .should('have.length', 2);
+    cy.findAllByRole('listitem').should('have.length', 2);
   });
 
-  it('should fetch hotel collection from backend and show it in screen when visit /hotels urls', () => {
+```
+
+- Apply same changes in other specs:
+
+### ./cypress/integration/hotel-collection.spec.ts
+
+```diff
+  it('should fetch hotel list and show it in screen when visit /hotel-collection url', () => {
     // Arrange
 +   cy.server();
-+   cy.route('GET', 'http://localhost:3000/api/hotels').as('fetchHotels');
++   cy.route('GET', '/api/hotels').as('fetchHotels');
 
     // Act
-    cy.visit('#/hotels');
+    cy.visit('/hotel-collection');
 
     // Assert
 +   cy.wait('@fetchHotels');
-    cy.get('[data-testid="hotelCollectionContainer"]')
-      .children()
-      .should('have.length', 10);
+    cy.findAllByRole('listitem').should('have.length', 10);
   });
-});
 
+  it('should fetch hotel list greater than 0 when visit /hotel-collection url', () => {
+    // Arrange
++   cy.server();
++   cy.route('GET', '/api/hotels').as('fetchHotels');
+
+    // Act
+    cy.visit('/hotel-collection');
+
+    // Assert
++   cy.wait('@fetchHotels');
+    cy.findAllByRole('listitem').should('have.length.greaterThan', 0);
+  });
 ```
 
 - So, we need to take care with this stuff, let's restore the api request:
 
-### ./src/pods/hotel-collection/hotel-collection.api.js
+### ./src/pods/hotel-collection/hotel-collection.api.ts
 
 ```diff
 import Axios from 'axios';
+import { HotelEntityApi } from './hotel-collection.api-model';
 
-const url = `${process.env.BASE_API_URL}/api/hotels`;
+const url = '/api/hotels';
 
-- export const fetchHotelCollection = () => {
--   const promise = new Promise(resolve => {
--     Axios.get(url).then(({ data }) => setTimeout(() => resolve(data), 4000));
--   });
+export const getHotelCollection = async (): Promise<HotelEntityApi[]> => {
+- const promise = new Promise<HotelEntityApi[]>((resolve) => {
+-   Axios.get(url).then(({ data }) => setTimeout(() => resolve(data), 4000));
+- });
+- return promise;
++ const { data } = await Axios.get<HotelEntityApi[]>(url);
 
--   return promise;
-- };
-+ export const fetchHotelCollection = () =>
-+   Axios.get(url).then(({ data }) => data);
++ return data;
+};
+
 ```
 
 # About Basefactor + Lemoncode

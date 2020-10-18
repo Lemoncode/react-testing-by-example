@@ -14,61 +14,62 @@ npm install
 
 - We will create `hotel-collection` specs:
 
-### ./cypress/integration/hotel-collection.spec.js
+### ./cypress/integration/hotel-collection.spec.ts
 
 ```javascript
 describe('Hotel collection specs', () => {
-  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
+  it('should fetch hotel list and show it in screen when visit /hotel-collection url', () => {
     // Arrange
     // Act
     // Assert
   });
 });
-```
-
-- Add `data-testid`:
-
-### ./src/pods/hotel-collection/hotel-collection.component.jsx
-
-```diff
-...
-
-  return (
--   <div className={classes.container}>
-+   <div className={classes.container data-testid="hotelCollectionContainer">
-      {hotelCollection.map(hotel => (
-...
-
 ```
 
 - Update spec:
 
-### ./cypress/integration/hotel-collection.spec.js
+### ./cypress/integration/hotel-collection.spec.ts
 
 ```diff
 describe('Hotel collection specs', () => {
-  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
+  it('should fetch hotel list and show it in screen when visit /hotel-collection url', () => {
     // Arrange
 
     // Act
-+   cy.visit('#/hotels');
++   cy.visit('/hotel-collection');
 
     // Assert
-+   cy.get('[data-testid="hotelCollectionContainer"]')
-+     .children()
-+     .should('have.length', 0);
++   cy.findAllByRole('listitem').should('have.length', 10);
   });
 });
+
 ```
 
-- How can we simulate, fetching 2 hotels?:
-
-### ./cypress/integration/hotel-collection.spec.js
+- Maybe we could expect `have length greater than`:
 
 ```diff
++ it('should fetch hotel list greater than 0 when visit /hotel-collection url', () => {
++   // Arrange
+
++   // Act
++   cy.visit('/hotel-collection');
+
++   // Assert
++   cy.findAllByRole('listitem').should('have.length.greaterThan', 0);
++ });
+```
+
+- But in some scenarios, maybe we need to simulate this fetch. How can we simulate, fetching 2 hotels?:
+
+### ./cypress/integration/hotel-collection.spec.ts
+
+```diff
++ import { HotelEntityApi } from '../../src/pods/hotel-collection/api';
+
 describe('Hotel collection specs', () => {
-  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
-    // Arrange
+  ...
++ it('should fetch two hotels when visit /hotel-collection url', () => {
++   // Arrange
 +   const hotels = [
 +     {
 +       id: 'id-1',
@@ -88,22 +89,22 @@ describe('Hotel collection specs', () => {
 +       hotelRating: 2,
 +       city: 'test-city-2',
 +     },
-+   ];
-+   cy.server();
-+   cy.route('GET', 'http://localhost:3000/api/hotels', hotels);
++   ] as HotelEntityApi[];
++   cy.server(); // Start the server to change request behaviour
++   cy.route('GET', '/api/hotels', hotels);
 
-    // Act
-    cy.visit('#/hotels');
++   // Act
++   cy.visit('/hotel-collection');
 
-    // Assert
-    cy.get('[data-testid="hotelCollectionContainer"]')
-      .children()
--     .should('have.length', 0);
-+     .should('have.length', 2);
-  });
++   // Assert
++   cy.findAllByRole('listitem').should('have.length', 2);
++ });
 });
 
 ```
+
+> [server method](https://docs.cypress.io/api/commands/server.html#Syntax)
+> Mock data, 404 responses, etc
 
 - This is a common task that we will have to do, so cypress provide the `fixtures` approach:
 
@@ -134,11 +135,13 @@ describe('Hotel collection specs', () => {
 
 - Update spec:
 
-### ./cypress/integration/hotel-collection.spec.js
+### ./cypress/integration/hotel-collection.spec.ts
 
 ```diff
-describe('Hotel collection specs', () => {
-  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
+- import { HotelEntityApi } from '../../src/pods/hotel-collection/api';
+
+...
+  it('should fetch two hotels when visit /hotel-collection url', () => {
     // Arrange
 -   const hotels = [
 -     {
@@ -159,48 +162,40 @@ describe('Hotel collection specs', () => {
 -       hotelRating: 2,
 -       city: 'test-city-2',
 -     },
--   ];
-    cy.server();
--   cy.route('GET', 'http://localhost:3000/api/hotels', hotels);
-+   cy.fixture('hotels').then(hotels => {
-+     cy.route('GET', 'http://localhost:3000/api/hotels', hotels);
+-   ] as HotelEntityApi[];
+    cy.server(); // Start the server to change request behaviour
++   cy.fixture('hotels').then((hotels) => {
+      cy.route('GET', '/api/hotels', hotels);
 +   });
 
     // Act
-    cy.visit('#/hotels');
+    cy.visit('/hotel-collection');
 
     // Assert
-    cy.get('[data-testid="hotelCollectionContainer"]')
-      .children()
-      .should('have.length', 2);
+    cy.findAllByRole('listitem').should('have.length', 2);
   });
-});
 
 ```
 
 - Or a shorted way:
 
-### ./cypress/integration/hotel-collection.spec.js
+### ./cypress/integration/hotel-collection.spec.ts
 
 ```diff
-describe('Hotel collection specs', () => {
-  it('should fetch 2 hotels and show it in screen when visit /hotels urls', () => {
+  it('should fetch two hotels when visit /hotel-collection url', () => {
     // Arrange
-    cy.server();
--   cy.fixture('hotels').then(hotels => {
--     cy.route('GET', 'http://localhost:3000/api/hotels', hotels);
+    cy.server(); // Start the server to change request behaviour
+-   cy.fixture('hotels').then((hotels) => {
+-     cy.route('GET', '/api/hotels', hotels);
 -   });
-+   cy.route('GET', 'http://localhost:3000/api/hotels', 'fixture:hotels');
++   cy.route('GET', '/api/hotels', 'fixture:hotels');
 
     // Act
-    cy.visit('#/hotels');
+    cy.visit('/hotel-collection');
 
     // Assert
-    cy.get('[data-testid="hotelCollectionContainer"]')
-      .children()
-      .should('have.length', 2);
+    cy.findAllByRole('listitem').should('have.length', 2);
   });
-});
 
 ```
 

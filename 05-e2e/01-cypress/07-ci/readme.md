@@ -19,45 +19,20 @@ npm install
 ```diff
 ...
 "scripts": {
-    "test:e2e": "npm-run-all -p -l start start:e2e",
     "start:e2e": "cypress open",
-+   "test:e2e:ci": "npm-run-all -p -l- r start:dev run:e2e",
-+   "run:e2e": "cypress run"
++   "test:e2e:ci": "npm-run-all -p -l- r start:dev start:e2e:ci",
++   "start:e2e:ci": "cypress run"
   },
 ...
 ```
+
+> More info about [`-r` flag](https://github.com/mysticatea/npm-run-all/blob/master/docs/npm-run-all.md#npm-run-all-command) to stop process when it finishes e2e tests
+> We can change browser to another one, with headless version, see [commands](https://docs.cypress.io/guides/guides/command-line.html#Commands)
 
 - And run it:
 
 ```bash
 npm run test:e2e:ci
-```
-
-- As we see, `hotel collection specs` are failing. Since, we are running the web server without backend, we should remove spec retrieving real data.
-
-### ./cypress/integration/hotel-collection.spec.js
-
-```diff
-...
-- it('should fetch hotel collection from backend and show it in screen when visit /hotels urls', () => {
--   // Arrange
--   const params = {
--     apiPath: '/hotels',
--     fetchAlias: 'fetchHotels',
--   };
-
--   // Act
--   cy.loadData(params);
--   cy.visit('#/hotels');
-
--   // Assert
--   cy.wait('@fetchHotels');
--   cy.get('[data-testid="hotelCollectionContainer"]')
--     .children()
--     .should('have.length', 10);
-- });
-});
-
 ```
 
 - Notice that `cypress` has added `screenshots` and `videos` with failing specs, we should ignore these folder for git:
@@ -66,37 +41,169 @@ npm run test:e2e:ci
 
 ```diff
 ...
-.awcache
 + cypress/screenshots
 + cypress/videos
 
 ```
 
-- Add circe ci config file:
+- Maybe you notice that spec fail due to it's not properly clearing the input, we are not waintig to resolve cities before type on input:
 
-### ./.circleci/config.yml
+### ./cypress/integration/hotel-edit.spec.ts
 
-```yml
-version: 2
-jobs:
-  build:
-    working_directory: ~/test-ci-code
-    docker:
-      - image: circleci/node:10
-    steps:
-      - checkout
-      - run:
-          name: install cypress dependencies
-          command: 'sudo apt-get install xvfb libgtk-3-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2'
-      - run:
-          name: install
-          command: 'npm install'
-      - run:
-          name: test:e2e
-          command: 'npm run test:e2e:ci'
+```diff
+  it('should update hotel name when it edits an hotel and click on save button', () => {
+    // Arrange
+
+    // Act
+    cy.loadAndVisit(
+      '/hotel-collection',
+      [
+        { path: '/api/hotels', alias: 'loadHotels' },
+        { path: '/api/hotels/2' },
++       {
++         path: '/api/cities',
++       },
+      ],
+      () => {
+        cy.findAllByRole('button', { name: 'Edit hotel' }).then((buttons) => {
+          buttons[1].click();
+        });
+      }
+    );
+
+    cy.findByLabelText('Name').clear().type('Updated hotel two');
+
+    cy.findByRole('button', { name: 'Save' }).click();
+
+    // Assert
+    cy.wait('@loadHotels');
+    cy.findByText('Updated hotel two');
+  });
 ```
 
-> We need to install cypress dependencies. More info [here](https://docs.cypress.io/guides/guides/continuous-integration.html#Advanced-setup)
+- We will configure [Github actions](https://github.com/features/actions) to run all tests in this app. Since Github has [free private/public repositories](https://github.com/pricing) we only need to create a github repository:
+
+```bash
+git init
+git remote add origin https://github.com/...
+git add .
+git commit -m "add project with tests"
+git push --set-upstream origin master
+```
+
+- Create new branch on repository `feature/add-ci-file` and add ci config:
+
+### ./.github/workflows/ci.yml
+
+```yml
+name: Ci workflow
+
+on: pull_request
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Tests e2e
+        run: npm run test:e2e:ci
+```
+
+- Commit, push:
+
+```bash
+git add .
+git commit -m "add ci file"
+git push
+```
+
+- Create a pull request.
+
+- Check failing specs:
+
+### ./cypress/integration/hotel-edit.spec.ts
+
+```diff
+  it('should update hotel name when it edits an hotel and click on save button', () => {
+    ...
+
+    // Assert
+    cy.wait('@loadHotels');
+-   cy.findByText('Updated hotel two');
++   cy.findByText('Fail spec');
+  });
+```
+
+- Commit again:
+
+```bash
+git add .
+git commit -m "add failing spec"
+git push
+```
+
+- We can upload `screenshots` and `videos` as `artifacts` if specs `fail`:
+
+### ./.github/workflows/ci.yml
+
+```diff
+name: Ci workflow
+
+on: pull_request
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Tests e2e
+        run: npm run test:e2e:ci
++     - name: Upload screenshots when specs fail
++       if: ${{ failure()}}
++       uses: actions/upload-artifact@v2
++       with:
++         name: screenshots
++         path: ./cypress/screenshots
++     - name: Upload videos when specs fail
++       if: ${{ failure()}}
++       uses: actions/upload-artifact@v2
++       with:
++         name: videos
++         path: ./cypress/videos
+```
+
+- Commit again:
+
+```bash
+git add .
+git commit -m "upload artifacts"
+git push
+```
+
+- Restore specs:
+
+### ./cypress/integration/hotel-edit.spec.ts
+
+```diff
+  it('should update hotel name when it edits an hotel and click on save button', () => {
+    ...
+
+    // Assert
+    cy.wait('@loadHotels');
+-   cy.findByText('Fail spec');
++   cy.findByText('Updated hotel two');
+  });
+```
 
 # About Basefactor + Lemoncode
 
